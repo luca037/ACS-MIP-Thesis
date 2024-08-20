@@ -273,40 +273,39 @@ generica tra cui i problemi di programmazione lineare intera.
 Il B\&B implementa una ricerca ad albero che permette di 
 ricavare una soluzione ottima del problema considerato.
 
-\begin{itemize}
-    \item Partiamo dalla radice, questa rappresenta il nostro problema $P$ di minimizzazione.
-        Per semplificare $P$ risolviamo il suo rilassamento, ottenuto rimuovendo il vincolo
-        di interezza.
-        In questo modo otteniamo un problema di programmazione lineare che possiamo 
-        risolvere in maniera più agevole.
-        Risolto il rilassamento, possiamo avere diverse possibilità:
-        \begin{itemize}
-            \item se il rilassamento è impossibile, allora lo è anche $P$ e quindi 
-                possiamo concludere;
-            \item se esiste una soluzione ottima $x^*$ del rilassamento che è anche
-                ottima per $P$ (cioè tale soluzione deve soddisfare il vincolo di interezza),
-                allora $x^*$ è l'ottimo e possiamo concludere;
-            \item se esiste una soluzione ottima $x^*$ del rilassamento che non
-                è intera allora abbiamo un \textbf{lower bound} per $P$ e
-                dobbiamo fare branching. Si tratta del caso più probabile.
-        \end{itemize}
-    \item Dunque dobbiamo fare \textbf{branching}, cioè dividere il problema in sottoproblemi
-        ottenuti mediante restrizioni del problema precedente.
-        In questo modo andiamo a creare i primi due figli del problema principale, che
-        era la radice.
-        Si tratta ora di decidere come partizionare il problema.
-        Dal punto precedente abbiamo ottenuto una soluzione del rilassamento
-        che non era intera:
-        \[
-            \exists j \in J \quad \text{t.c.} \quad x^*_j \notin \Z
-        \]
-        in altre parole, una (almeno una) delle variabili che dovrebbe essere intera
-        (posta nei nostri vincoli) non lo è.
-        Abbiamo trovato come partizionare il problema, cioè come costruire le restrizioni;
-        costruiamo le restrizioni dei nodi figli imponendo uno vincolo ciascuno dei due seguenti:
-        \[
-            x_j \leq \lfloor x^*_j \rfloor \vee x_j \geq \lceil x^*_j \rceil
-        \]
+L'algoritmo inizia dal nodo radice il quale rappresenta il problema MIP $P$
+che vogliamo risolvere.
+\begin{enumerate}
+    \item Si considera il rilassamento $R$ di $P$ ottenuto rimuovendo 
+        il vincolo di interezza sulle variabili. $R$ è un problema di programmazione 
+        lineare ed è quindi più semplice da risolvere.
+        Dalle proprietà del rilassamento sappiamo che:
+        \begin{enumerate}
+            \item Se $F(R) = \varnothing$ allora $F(P) = \varnothing$ quindi
+                l'algoritmo termina.
+            \item Se esiste una soluzione ottima $x^*\in F(R)$ tale per cui $x^* \in F(P)$,
+                allora $x^*$ è ottima per $P$ e l'algoritmo termina.
+            \item Se esiste una soluzione $x^*\in F(R)$ tale che $x^* \notin F(P)$,
+                ovvero la soluzione trovata non rispetta i vincoli di interezza,
+                allora abbiamo trovato un \emph{limite inferiore} sull'ottimo di $P$.
+        \end{enumerate}
+        Se ci ritroviamo nel caso $(c)$ allora l'algoritmo prosegue.
+
+    \item Si effettua \emph{branching} sul nodo radice.
+        L'operazione di branching applicata ad un nodo permette di individuare
+        i suoi nodi figli: questi sono sottoproblemi che vengono
+        ottenuti mediante restrizioni del problema genitore.
+        Almeno una delle variabili della soluzione $x^*$ non rispetta il vincolo
+        di interezza, ovvero
+        $ \exists\,j \in J \,:\, x^*_j \notin \Z$.
+        Di conseguenza due nodi figli possono essere creati imponendo a ciascuno
+        uno dei seguenti due vincoli aggiuntivi:
+        \begin{equation}
+            x_j \leq \lfloor x^*_j \rfloor,\quad x_j \geq \lceil x^*_j \rceil.
+        \end{equation}
+        I nodi vengono aggiunti alla coda $Q$ dei sottoproblemi da risolvere.
+        La Figura~\ref{fig:branching} mostra il risultato di un'operazione di
+        branching dal punto di vista della regione ammissibile del problema $P$.
         \begin{figure}[ht!]
             \begin{center}
                 \includegraphics[scale=0.5]{./img/branching.png}
@@ -314,8 +313,11 @@ ricavare una soluzione ottima del problema considerato.
             \caption{Branching sulla soluzione ottima del rilassamento lineare $x^*$}
             \label{fig:branching}
         \end{figure}
-        In questo modo abbiamo tagliato la regione ammissibile del nostro problema 
-        in due scartando di fatto delle soluzioni non ammissibili (figura~\ref{fig:branching}).
+
+    \item Si procede considerando un sottoproblema $P_i \in Q$ e si risolve
+        un suo rilassamento $R_i$.
+\end{enumerate}
+\begin{itemize}
     \item Quindi i nodi dell'albero sono restrizioni del genitore. 
         Noi risolviamo queste restrizioni tramite rilassamenti.
         Se il rilassamento di un nodo viene impossibile, allora non serve più fare
