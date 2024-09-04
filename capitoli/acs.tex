@@ -1,0 +1,84 @@
+\chapter{L'algoritmo ACS}%
+\label{cha:L'algoritmo ACS}
+In capitolo capitolo viene descritto il funzionamento dell'algoritmo
+Alternating Criteria Search: viene definita la struttura dei sub-MIP e
+vengono descritti i passi che permettono all'algoritmo di ottenere una
+soluzione ammissibile per un problema MIP generico.
+
+\section{Struttura dei problemi ausiliari}%
+\label{sec:Struttura dei problemi ausiliari}
+Prendiamo in considerazione il seguente MIP:
+\begin{equation}
+    \begin{cases}
+        \min c^tx\\
+        Ax = b\\
+        l \leq x \leq u\\
+        x_i \in \Z & \forall i\in I
+    \end{cases}
+\end{equation}
+dove $c\in \R^m$, $A\in \R^{m\times n}$, $b\in \R^m$, $I\subseteq \{ 1, \ldots, n\}$
+è l'insieme contenente gli indici delle variabili intere, $x$ è il vettore
+delle variabili, infine $l\in \overline \R^n$ e $u\in \overline \R^n$ sono i
+limiti imposti alle variabili e $\overline \R = \R \cup \{-\infty, +\infty\}$.
+
+\subsection{FMIP}%
+\label{sub:FMIP}
+Il modello di un FMIP è il seguente:
+\begin{equation}
+    \begin{cases} \label{eq:FMIP}
+        \min \sum\limits_{i=0}^{m-1} \Delta_i^+ + \Delta_i^- \\
+        Ax + I_m \Delta^+ - I_m \Delta^- = b \\
+        x_i = \hat x_i & \forall i \in F \\
+        l \leq x \leq u\\
+        x_i \in \Z & \forall i \in I\\
+        \Delta^+ \leq 0,\quad \Delta^- \leq 0
+    \end{cases}
+\end{equation}
+dove $I_m\in \R^{m\times m}$ è la matrice identità e $\Delta^+$, $\Delta^-$
+sono due vettori di variabili continue aventi dimensione $m$ in accordo
+con il numero di vincoli del problema.
+L'FMIP è ottenuto dal MIP andando a modificare la funzione obiettivo e
+aggiungendo variabili $\Delta^+_i,\,\Delta^-_i$ chiamate \emph{slack}.
+Dalla \ref{eq:FMIP} notiamo che una soluzione ammissibile per l'FMIP
+è ammissibile anche per il MIP se e solo se le variabili slack sommano
+a zero.
+L'FMIP non viene risolto direttamente, vengono fissate un sottoinsieme
+$F\subseteq I$ delle variabili intere a devi valori 
+presi dal vettore di input $[\hat x,\,\, \hat \Delta^+,\,\, \hat \Delta^-]$.
+La presenza delle variabili di slack permette di utilizzare un vettore $\hat x$ 
+che non è necessariamente una soluzione ammissibile, l'unica restrizione 
+è che siano rispettati i vincoli di interezza e i limiti delle variabili.
+In altre parole si deve avere che $l \leq \hat x \leq u$ e $\hat x_i \in \Z,\, \forall i\in I$.
+
+Minimizzare la somma delle slack permette di migliorare il grado di ammissibilità
+della soluzione mentre il fissaggio delle variabili consente di ridurre la
+complessità del problema.
+
+% TODO: Aggiungo il caso in cui Ax<=b e Ax >= b?
+
+\subsection{OMIP}%
+\label{sub:OMIP}
+Il secondo problema ausiliario ha come obiettivo quello di migliorare 
+il vettore parzialmente ammissibile $[\hat x,\,\, \hat \Delta^+,\,\, \hat \Delta^-]$
+che riceve in input.
+Il suo modello si ottiene partendo dal MIP e aggiungendo ad ogni vincolo le 
+variabili slack:
+\begin{equation}
+    \begin{cases}
+        \min c^tx\\
+        Ax + I_m \Delta^+ - I_m \Delta^- = b \\
+        \sum\limits_{i=0}^{m-1} \Delta^+_i + \Delta^-_i \leq \sum\limits_{i=0}^{m-1} \hat \Delta^+_i + \hat \Delta^-_i\\
+        x_i = \hat x_i & \forall i \in F \\
+        l \leq x \leq u\\
+        x_i \in \Z & \forall i\in I
+    \end{cases}.
+\end{equation}
+In maniera analoga all'FMIP, anche nell'OMIP vengono fissate alcune delle
+variabili intere per diminuire la complessità del problema.
+Infine, per assicurare che la soluzione ottima dell'OMIP rimanga, al caso
+peggiore, tanto inammissibile quanto il vettore di input $\hat x$, viene
+aggiunto il vincolo $\sum_i \Delta^+_i + \Delta^-_i$ che limita il valore della
+somma delle variabili slack.
+
+\section{Il processo risolutivo}%
+\label{sec:Il processo risolutivo}

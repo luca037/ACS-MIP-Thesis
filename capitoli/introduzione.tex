@@ -66,13 +66,13 @@ Si osserva che:
 Notiamo come, nell'ultimo caso, abbiamo ricavato un'informazione sulla soluzione
 ottima di $P$ risolvendo una sua restrizione.
 
-\begin{figure}[ht!]
-\begin{center}
-    \includegraphics[scale=0.06]{img/restrizione}
-    \caption{L'insieme delle soluzioni ammissibili di $P_k$ è un
-    sottoinsieme dell'insieme delle soluzioni ammissibili di $P$.}
-\end{center}
-\end{figure}
+%\begin{figure}[ht!]
+%\begin{center}
+%    \includegraphics[scale=0.06]{img/restrizione}
+%    \caption{L'insieme delle soluzioni ammissibili di $P_k$ è un
+%    sottoinsieme dell'insieme delle soluzioni ammissibili di $P$.}
+%\end{center}
+%\end{figure}
 
 \noindent
 Una ricerca viene detta \textit{esaustiva} quando l'insieme delle restrizioni
@@ -124,13 +124,13 @@ Valgono le seguenti proprietà:
         allora $x^*$ è ottima anche per $P$.
 \end{itemize}
 
-\begin{figure}[ht!]
-\begin{center}
-    \includegraphics[scale=0.06]{img/relax}
-    \caption{L'insieme delle soluzioni ammissibili di $P$ è un sottoinsieme
-    dell'insieme delle soluzioni ammissibili di $R$.}
-\end{center}
-\end{figure}
+%\begin{figure}[ht!]
+%\begin{center}
+%    \includegraphics[scale=0.06]{img/relax}
+%    \caption{L'insieme delle soluzioni ammissibili di $P$ è un sottoinsieme
+%    dell'insieme delle soluzioni ammissibili di $R$.}
+%\end{center}
+%\end{figure}
 
 \section{Programmazione lineare}%
 \label{sec:Programmazione lineare}
@@ -138,13 +138,13 @@ Un generico problema di programmazione lineare è definito come segue:
 \begin{equation} \label{eq:lpDef}
     P:
     \begin{cases}
-        \min\,cx\\
+        \min\,c^tx\\
         a_ix \sim b_i & i=1,\ldots,m\\
         l_j \leq x_j \leq u_j & j = 1, \ldots, n
     \end{cases}
 \end{equation}
 dove $\sim \in \{\leq, \geq, =\}$, $l_j \in \R \cup \{-\infty\}$ e $u_j \in \R \cup 
-\{+\infty\}$ e dove $cx$ è funzione lineare.
+\{+\infty\}$ e dove $c^tx$ è funzione lineare.
 Le disuguaglianze strette non sono permesse, ciò è dovuto al fatto che 
 gli algoritmi che risolvono questa tipologia di problemi richiedono che le 
 soluzioni ammissibili appartengano ad un insieme chiuso.
@@ -224,6 +224,7 @@ che vogliamo risolvere.
         I nodi vengono aggiunti alla coda $Q$ dei sottoproblemi da risolvere.
         La Figura~\ref{fig:branching} mostra il risultato di un'operazione di
         branching dal punto di vista della regione ammissibile del problema $P$.
+
         \begin{figure}[ht!]
             \begin{center}
                 \includegraphics[scale=0.4]{./img/branching.png}
@@ -267,20 +268,21 @@ che vogliamo risolvere.
         soluzione ottima di $P$ trovata dall'algoritmo.
 \end{enumerate}
 
+% TODO: Metto la figura dell'andamento dell'upper e lower bound?
+\begin{figure}[ht!]
+\begin{center}
+    \includegraphics[scale=0.6]{img/upper_lower}
+    \caption{Andamento nel tempo del limite inferiore e superiore sul 
+    valore ottimo nel B$\&$B.}
+\end{center}
+\end{figure}
+
 \begin{figure}[ht!]
 \begin{center}
     \includegraphics[scale=0.5]{./img/branchandbound.png}
 \end{center}
 \caption{Ricerca ad albero di un algoritmo B\&B}
 \end{figure}
-
-% TODO: Metto la figura dell'andamento dell'upper e lower bound?
-%\begin{figure}[ht!]
-%\begin{center}
-%    \includegraphics[scale=0.7]{img/upper_lower}
-%    \caption{Andamento nel tempo del limite inferiore e superiore nel B$\&$B.}
-%\end{center}
-%\end{figure}
 
 % TODO: Metto la parte sul B&C? Io due righe le scrivo in caso poi le tolgo.
 \subsection{Algoritmo Branch and Cut}%
@@ -302,3 +304,20 @@ che stiamo risolvendo.
 \caption{Applicazione di un piano di taglio dal punto di vista della regione
 ammissibile}
 \end{figure}
+
+\section{Alternating Criteria Search}%
+\label{sec:Alternating Criteria Search}
+L'ACS è un algoritmo euristico che opera su problemi MIP.
+Il suo obiettivo principale non è quello di trovare una soluzione ottima ma
+di trovarne una ammissibile che abbia una buona qualità.
+L'approccio utilizzato dall'ACS è quello di risolvere, in maniera iterativa,
+molteplici \emph{sub-MIP} ricavati a partire dal problema principale.
+I sub-MIP considerati appartengono ad una delle seguenti due tipologie:
+\begin{itemize}
+    \item \emph{FMIP}: questi problemi puntano a minimizzare il grado
+        dell'inammissibilità della soluzione.
+    \item \emph{OMIP}: questi problemi condividono la stessa funzione obiettivo
+        del MIP di partenza e puntano ad ottimizzare il valore della soluzione.
+\end{itemize}
+Allo scopo di raggiungere questi due obiettivi, vengono risolte delle
+varianti dei sub-MIP in cui un certo numero di variabili vengono fissate.
