@@ -106,9 +106,9 @@ slack è maggiore strettamente di zero.
 \end{figure}
 
 Per come sono costruiti i sub-MIP l'inammissibilità della soluzione decresce
-in maniera monotona, tuttavia non è garantita la convergenza e per questo
-motivo è necessario fissare dei limiti che consentano all'algoritmo di
-terminare.
+in maniera monotona, tuttavia non è garantita la convergenza ad una
+soluzione e per questo motivo è necessario fissare dei limiti che consentano 
+all'algoritmo di terminare.
 Questo ed altri parametri che verranno introdotti successivamente hanno 
 un'influenza diretta sulle prestazioni dell'algoritmo.
 La Figura~\ref{fig:andamento_objvfmip_objvomip} mostra il comportamento
@@ -116,8 +116,7 @@ ideale dell'algoritmo.
 
 Una volta trovata una soluzione ammissibile, inizia una seconda fase in
 cui viene risolto OMIP allo scopo di migliorare la qualità della soluzione.
-Una volta conclusa anche questa fase, l'algoritmo termina restituendo la
-soluzione trovata.
+Conclusa questa fase l'algoritmo termina restituendo la soluzione trovata.
 
 \begin{figure}[ht!]
 \begin{center}
@@ -131,24 +130,29 @@ una ammissibile qualitativamente buona (punto azzurro).}
 \begin{algorithm}
     \caption{Alternating Criteria Search} \label{alg:acs}
     \begin{algorithmic}
+        \Require Maximum number of iterations MAX\_ITR
+        \Ensure Feasible solution $\hat x$ if found
         \State $initialize \,\,[\hat x,\, \Delta^+,\, \Delta^-]$ \Comment Soluzione intera che rispetta i limiti
         \State $slack\_sum \gets -1$
-        \For {$i\gets 1 \textbf{ to } MAX\_ITR$} \Comment MAX\_ITR va fissato
+        \For {$i\gets 1 \textbf{ to } MAX\_ITR$}
         \State $F \gets \text{randomized variable index subset, } F\subseteq I$
         \State $[\hat x,\, \Delta^+,\, \Delta^-] \gets \text{solve\_FMIP}(F,\,\hat x)$
         \State $slack\_sum\gets \sum_i \Delta^+_i + \Delta^-_i$
         \State $F \gets \text{randomized variable index subset, } F\subseteq I$
         \State $[\hat x,\, \Delta^+,\, \Delta^-] \gets \text{solve\_OMIP}(F,\,\hat x,\,sum\_slack)$
-        \If {$\sum_i \Delta_i^+ + \Delta_i^- = 0$}
+        \State $slack\_sum\gets \sum_i \Delta^+_i + \Delta^-_i$
+        \If {$slack\_sum = 0$}
         \State break
         \EndIf
         \EndFor
+        \If {$slack\_sum = 0$} \Comment Miglioramento qualità della soluzione
         \State $z\gets 0$
-        \Repeat \Comment Miglioramento qualità
+        \Repeat
         \State $z \gets c^t \hat x$
         \State $F \gets \text{randomized variable index subset, } F\subseteq I$
         \State $[\hat x,\, \Delta^+,\, \Delta^-] \gets \text{solve\_OMIP}(F,\,\hat x,\,0)$
-        \Until {$c \hat x < z$}
+        \Until {$c^t \hat x < z$}
+        \EndIf
         \State \Return $[\hat x,\, \Delta^+,\, \Delta^-]$
         \State
         \Function{solve\_FMIP}{$F,\, \hat x$}
@@ -160,3 +164,103 @@ una ammissibile qualitativamente buona (punto azzurro).}
         \EndFunction
     \end{algorithmic}
 \end{algorithm}
+
+\subsection{Trovare il vettore di soluzioni iniziale}%
+\label{sub:Trovare il vettore di soluzioni iniziale}
+Alternating Criteria Search richiede solamente che il vettore iniziale rispetti
+i vincoli di interezza delle variabili e i loro limiti.
+Può essere utilizzato un qualsiasi vettore che rispetti queste due richieste.
+Esistono diverse strategie che si possono adottare per ottenere il vettore
+iniziale: la più semplice e la meno costosa prevede di generare i valori in maniera
+randomica, tuttavia è molto probabile che il vettore generato in questo modo
+abbia un alto grado di non ammissibilità.
+Un approccio comune è quello di risolvere il rilassamento
+lineare di MIP e poi arrotondare i valori frazionari all'intero più vicino.
+Il problema in questo caso è che il rilassamento potrebbe essere 
+molto costoso da risolvere.
+L'Algoritmo~\ref{alg:startingVectorHeuristic} propone un approccio ibrido:
+si tratta di un algoritmo euristico che combina la generazione randomica dei
+valori alla risoluzione di un problema lineare.
+Ad ogni iterazione un certo numero di variabili intere vengono fissate a dei
+valori casuali che rispettano i limiti, quelle rimanenti vengono ottimizzate
+verso l'ammissibilità.
+L'algoritmo termina quando tutte le variabili sono state fissate.
+
+\begin{algorithm}
+    \caption{Vettore iniziale euristico} \label{alg:startingVectorHeuristic}
+    \begin{algorithmic}
+        \Require Percentage of variables to fix $\theta$, $0 < \theta \leq 100$, Fixed bound constat $c_b$
+        \Ensure Starting integer-feasible solution vector $\hat x$
+        \State $F \gets \varnothing$
+        \While {$\hat x$ is not integer feasible and $F \neq I$}
+        \State $K \gets \text{index set of the first $\theta\%$ of unfixed variables of $I$}$
+        \For {$k \in K$}
+        \State $\hat x_k \gets \text{random integer value between } [\max(l_k,\, -c_b),\,\min(u_k,\, c_b)]$ 
+        \EndFor
+        \State $F \gets F\cup K$
+        \State $[x,\, \Delta^+,\, \Delta^-] \gets \min \{\sum_i \Delta_i^+ + \Delta_i^- | Ax + I_m \Delta^+ - I_m \Delta^- = b,\, x_j = \hat x_j\, \forall j \in F\}$
+        \State $Q \gets \text{index set of integer variables of $x$ with integer value}$
+        \State $\hat x_q \gets x_q,\, \forall q \in Q$
+        \State $F \gets F \cup Q$
+        \EndWhile
+        \State \Return $\hat x$
+    \end{algorithmic}
+\end{algorithm}
+
+L'algoritmo riceve in input $\theta$ e $c_b$: $\theta$ è la percentuale
+di variabili che vengono fissate ad un valore casuale ad ogni iterazione;
+$c_b$ viene utilizzato per gestire i casi in cui i limiti delle variabili
+tendono a $\pm \infty$.
+Una volta fissate in maniera randomica le prime $\theta\%$ variabili
+di $I$ non ancora fissate, viene risolto il rilassamento lineare di FMIP.
+Se esistono delle variabili che non sono ancora state fissate e che hanno un
+valore intero nella soluzione del rilassamento, allora queste vengono fissate.
+Ne risulta che ad ogni iterazione vengono fissate almeno $\theta\%$ di variabili
+e di conseguenza l'algoritmo effettua $\lceil \frac{100}{\theta}\rceil$ iterazioni
+nel caso peggiore.
+Il parametro $\theta$ rappresenta un tradeoff tra la difficoltà del rilassamento
+lineare e l'ammissibilità del vettore di soluzioni iniziale.
+
+\subsection{Il fissaggio delle variabili}%
+\label{sub:Il fissaggio delle variabili}
+Una volta ottenuto un vettore di soluzioni, bisogna decidere quante e quali
+variabili variabili intere fissare prima di passare a risolvere un sub-MIP.
+Il numero di variabili da fissare influisce sulla difficoltà del sub-MIP:
+fissarne troppe poche potrebbe non semplificare abbastanza il problema ausiliario
+e dunque ottenere dei miglioramenti richiederebbe molto tempo;
+d'altro canto fissarne troppe potrebbe restringere eccessivamente la ricerca e quindi
+verrebbero ottenuti miglioramenti molto piccoli.
+
+Trovare un metodo intelligente per scegliere quali variabili fissare può essere
+molto difficile in quanto esistono molte strutture di problemi da considerare.
+L'Algoritmo~\ref{alg:varFixingSelection} implementa un'idea molto semplice
+che si adatta a qualsiasi di struttura e permette di scegliere la quantità
+di variabili da fissare.
+Viene scelta casualmente un variabile intera $x$ e successivamente vengono fissate 
+un certo numero di variabili consecutive a $x$.
+Il parametro $\rho$ fornito in input permette di scegliere la quantità di variabili
+da fissare.
+Se viene raggiunta la fine di $I$ e non sono state fissate abbastanza variabili 
+fissate, allora l'algoritmo fissa le variabili rimanenti partendo dall'inizio
+di $I$ in modo circolare.
+
+\begin{algorithm} 
+    \caption{Selezione delle variabili da fissare} \label{alg:varFixingSelection}
+    \begin{algorithmic}
+        \Require Fraction of variables to fix $\rho$, $0 < \rho < 1$
+        \Ensure Set of integer indices $F$
+        \Function{Random\_Fixings}{$\rho$}
+        \State $i \gets \text{random element in $I$}$
+        \State $F \gets \text{first $\rho \cdot |I|$ consecutive integer variable indices starting from $i$ in a circular fashion}$
+        \State \Return $F$
+        \EndFunction
+    \end{algorithmic}
+\end{algorithm}
+
+Solitamente la formulazione di un problema MIP è strutturata in modo tale che
+variabili dello stesso tipo e collegate a livello logico vengano disposte
+consecutivamente.
+Considerare insiemi composti da variabili consecutive spesso permette di
+individuare sottostrutture coese all'interno di un problema.
+Fissare variabili appartenenti alla stessa sottostruttura e lasciare libere
+le altre può produrre sub-MIP più semplici da risolvere.

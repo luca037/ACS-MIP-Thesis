@@ -308,8 +308,11 @@ ammissibile}
 \section{Alternating Criteria Search}%
 \label{sec:Alternating Criteria Search}
 L'ACS è un algoritmo euristico che opera su problemi MIP.
-Il suo obiettivo principale non è quello di trovare una soluzione ottima ma
-di trovarne una ammissibile che abbia una buona qualità.
+Nel nostro contesto un algoritmo euristico applicato ad un problema
+MIP permette di ottenere una soluzione che rispetta tutti i vincoli del problema
+ma non consente di determinare se la soluzione trovata è la migliore possibile. % Cita https://www.ibm.com/docs/en/icos/22.1.1?topic=heuristics-what-are
+L'obiettivo in questo caso non è quello di trovare una soluzione ottima ma di
+ottenerne una ammissibile in poco tempo.
 L'approccio utilizzato dall'ACS è quello di risolvere, in maniera iterativa,
 molteplici \emph{sub-MIP} ricavati a partire dal problema principale.
 I sub-MIP considerati appartengono ad una delle seguenti due tipologie:
@@ -321,6 +324,12 @@ I sub-MIP considerati appartengono ad una delle seguenti due tipologie:
 \end{itemize}
 Allo scopo di raggiungere questi due obiettivi, vengono risolte delle
 varianti dei sub-MIP in cui un certo numero di variabili vengono fissate.
-I problemi ausiliari vengono risolti utilizzando l'algoritmo del B\&C.
+I problemi ausiliari vengono risolti utilizzando il B\&C.
+
+L'ACS non viene proposto come algoritmo sostitutivo ai due introdotti
+precedentemente ma come uno strumento aggiuntivo da integrare per velocizzare
+il processo di risoluzione di un generico problema MIP.
+% Sull'euristica posso usare la doc di cplex: https://www.ibm.com/docs/en/icos/22.1.1?topic=heuristics-what-are
+Le implementazioni
 
 % TODO: Piccola parte sugli algoritmi euristici. Devo trovare un documento.
