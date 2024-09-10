@@ -3,7 +3,7 @@
 In capitolo capitolo viene descritto il funzionamento dell'algoritmo
 Alternating Criteria Search: viene definita la struttura dei sub-MIP e
 vengono descritti i passi che permettono all'algoritmo di ottenere una
-soluzione ammissibile per un problema MIP generico.
+soluzione ammissibile per un problema MIP generico \cite{acsPaper}.
 
 \section{Struttura dei problemi ausiliari}%
 \label{sec:Struttura dei problemi ausiliari}
@@ -130,11 +130,10 @@ una ammissibile qualitativamente buona (punto azzurro).}
 \begin{algorithm}
     \caption{Alternating Criteria Search} \label{alg:acs}
     \begin{algorithmic}
-        \Require Maximum number of iterations MAX\_ITR
         \Ensure Feasible solution $\hat x$ if found
         \State $initialize \,\,[\hat x,\, \Delta^+,\, \Delta^-]$ \Comment Soluzione intera che rispetta i limiti
         \State $slack\_sum \gets -1$
-        \For {$i\gets 1 \textbf{ to } MAX\_ITR$}
+        \While {time limit not reached}
         \State $F \gets \text{randomized variable index subset, } F\subseteq I$
         \State $[\hat x,\, \Delta^+,\, \Delta^-] \gets \text{solve\_FMIP}(F,\,\hat x)$
         \State $slack\_sum\gets \sum_i \Delta^+_i + \Delta^-_i$
@@ -144,7 +143,7 @@ una ammissibile qualitativamente buona (punto azzurro).}
         \If {$slack\_sum = 0$}
         \State break
         \EndIf
-        \EndFor
+        \EndWhile
         \If {$slack\_sum = 0$} \Comment Miglioramento qualità della soluzione
         \State $z\gets 0$
         \Repeat
@@ -234,15 +233,14 @@ verrebbero ottenuti miglioramenti molto piccoli.
 Trovare un metodo intelligente per scegliere quali variabili fissare può essere
 molto difficile in quanto esistono molte strutture di problemi da considerare.
 L'Algoritmo~\ref{alg:varFixingSelection} implementa un'idea molto semplice
-che si adatta a qualsiasi di struttura e permette di scegliere la quantità
+che si adatta a qualsiasi tipo di struttura e permette di scegliere la quantità
 di variabili da fissare.
 Viene scelta casualmente un variabile intera $x$ e successivamente vengono fissate 
 un certo numero di variabili consecutive a $x$.
-Il parametro $\rho$ fornito in input permette di scegliere la quantità di variabili
+Il parametro $\rho$ fornito in input indica la quantità di variabili
 da fissare.
-Se viene raggiunta la fine di $I$ e non sono state fissate abbastanza variabili 
-fissate, allora l'algoritmo fissa le variabili rimanenti partendo dall'inizio
-di $I$ in modo circolare.
+Se viene raggiunta la fine di $I$ e non sono state fissate abbastanza variabili,
+allora le rimanenti vengono fisste partendo dall'inizio di $I$ in modo circolare.
 
 \begin{algorithm} 
     \caption{Selezione delle variabili da fissare} \label{alg:varFixingSelection}

@@ -1,0 +1,63 @@
+\chapter{Implementazione e risultati degli esperimenti}%
+\label{cha:Implementazione e risultati degli esperimenti}
+In questo capitolo vengono illustrate le scelte implementative adottate,
+il metodo impiegato per eseguire i test e i risultati ottenuti per le varie
+configurazioni di parametri.
+
+\section{Configurazione e metodologia dei test}%
+\label{sec:Configurazione e metodologia dei test}
+
+\subsection{Insieme delle istanze considerate}%
+\label{sub:Insieme delle istanze considerate}
+Le performance dell'algoritmo sono state ricavate andandolo a testare
+sull'insieme di problemi fornito dalla libreria MIPLIB 2017 \cite{miplib2017}.
+In particolare sono stati utilizzati i problemi appartenenti al \emph{Benchmark Set}
+nel quale si trovano:
+\begin{itemize}
+    \item 220 istanze facili;
+    \item 19 istanze difficili;
+    \item una istanza "aperta".
+\end{itemize}
+La difficoltà di un'istanza è definita da MIPLIB in base al tempo necessario
+per raggiungere l'ottimalità.
+Le istanze classificate come "aperte" non sono state ancora state risolte.
+
+\subsection{Software e hardware utilizzato}%
+\label{sub:Software utilizzato}
+L'algoritmo è stato realizzato utilizzando il linguaggio di programmazione C.
+Per la manipolazione e la risoluzione di problemi MIP e LP sono state
+utilizzate le funzioni offerte dalla \emph{CPLEX Callable Library} 22.1.1
+\cite{cplexCallableLib}.
+I test sono stati effettuati sul cluster del dipartimento di ricerca operativa
+del Dipartimento di Ingegneria dell'Informazione.
+La macchina utilizzata dispone di un processore Intel(R) Xeon(R) CPU E3-1220
+V2 @ 3.10GHz e 16GB di RAM.
+
+\subsection{Procedimento seguito e statistiche osservate}%
+\label{sub:Procedimento seguito e statistiche osservate}
+Trattandosi di un algoritmo euristico non è possibile dimostrare rigorosamente
+che una combinazione di valori assegnati ai parametri è migliore rispetto ad
+un altra.
+Si tratta quindi di verificare in via sperimentale quale combinazione
+fornisce i risultati migliori.
+Le statistiche che sono state osservate sono le seguenti:
+\begin{itemize}
+    \item Numero di problemi per cui è stata trovata una soluzione ammissibile per MIP.
+    \item Numero di iterazioni medie per ottenere una soluzione ammissibile per MIP.
+    \item Tempo medio per ottenere una soluzione ammissibile per MIP.
+    \item Qualità media della soluzione trovata.
+\end{itemize}
+Inizialmente i parametri sono stati fissati a dei valori arbitrari,
+successivamente sono state introdotte delle modifiche con l'intento di
+migliorare uno o più aspetti di quelli sopra elencati.
+
+Data una soluzione $x$ per un problema MIP avente soluzione ottima $\hat x$,
+la qualità $\gamma(x)\in [0,\,1]$ di $x$ è definita come segue:
+\begin{equation}
+    \gamma(x) =
+    \begin{cases}
+        0 & \text{se } |c^t\hat x| = |c^t x| = 0\\
+        1 & \text{se } c^t \hat x \cdot c^t x < 0\\
+        \frac{|c^t \hat x - c^t x|}{\max\{|c^t \hat x|,\, |c^t x|\}} & \text{altrimenti} 
+    \end{cases}
+\end{equation}

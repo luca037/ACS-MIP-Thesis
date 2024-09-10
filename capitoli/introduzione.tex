@@ -1,9 +1,9 @@
 \chapter{Introduzione}%
 \label{cha:Introduzione}
 In questo capitolo vengono introdotti i concetti base dei problemi di
-ottimizzazione, i problemi di programmazione lineare (LP), i problemi
-di programmazione lineare intera mista (MIP) e i rispettivi algoritmi
-risolutivi.
+ottimizzazione \cite{introOttimizz}, i problemi di programmazione lineare (LP)
+\cite{cenniLp}, i problemi di programmazione lineare intera mista (MIP) e i 
+rispettivi algoritmi risolutivi \cite{cenniMip}.
 
 \section{Definire un problema di ottimizzazione}
 \label{sec:Introduzione}
@@ -145,11 +145,10 @@ Un generico problema di programmazione lineare è definito come segue:
 \end{equation}
 dove $\sim \in \{\leq, \geq, =\}$, $l_j \in \R \cup \{-\infty\}$ e $u_j \in \R \cup 
 \{+\infty\}$ e dove $c^tx$ è funzione lineare.
-Le disuguaglianze strette non sono permesse, ciò è dovuto al fatto che 
-gli algoritmi che risolvono questa tipologia di problemi richiedono che le 
-soluzioni ammissibili appartengano ad un insieme chiuso.
-Più avanti vedremo il perché di questa scelta.
-
+%Le disuguaglianze strette non sono permesse, ciò è dovuto al fatto che 
+%gli algoritmi che risolvono questa tipologia di problemi richiedono che le 
+%soluzioni ammissibili appartengano ad un insieme chiuso.
+%Più avanti vedremo il perché di questa scelta.
 Dato un problema di programmazione lineare, esiste un algoritmo che, al caso peggiore,
 riesce a risolverlo con complessità polinomiale nella taglia del problema.
 La taglia di un problema è definita dal numero delle variabili e di vincoli.
@@ -158,7 +157,8 @@ In generale la programmazione lineare è poco applicabile in quanto la maggior
 parte dei problemi reali non rientra a far parte di questa categoria.
 Sebbene non venga spesso applicata direttamente, risulta essere uno strumento
 di fondamentale importanza che viene utilizzato da algoritmi che risolvono
-problemi più complessi.
+problemi più complessi, come per esempio i problemi di programmazione lineare
+intera mista.
 
 % TODO: Algoritmo del Simplesso.
 
@@ -281,7 +281,7 @@ che vogliamo risolvere.
 \begin{center}
     \includegraphics[scale=0.5]{./img/branchandbound.png}
 \end{center}
-\caption{Ricerca ad albero di un algoritmo B\&B}
+\caption{Ricerca ad albero di un algoritmo B\&B.}
 \end{figure}
 
 % TODO: Metto la parte sul B&C? Io due righe le scrivo in caso poi le tolgo.
@@ -302,17 +302,21 @@ che stiamo risolvendo.
     \includegraphics[scale=0.35]{img/branchandcut}
 \end{center}
 \caption{Applicazione di un piano di taglio dal punto di vista della regione
-ammissibile}
+ammissibile.}
 \end{figure}
 
 \section{Alternating Criteria Search}%
 \label{sec:Alternating Criteria Search}
 L'ACS è un algoritmo euristico che opera su problemi MIP.
+In generale gli euristici sono metodi che tentano di trovare una buona
+soluzione impiegando poco tempo ed effettuando delle scelte basate su
+alcune utili caratteristiche del problema considerato.
 Nel nostro contesto un algoritmo euristico applicato ad un problema
 MIP permette di ottenere una soluzione che rispetta tutti i vincoli del problema
-ma non consente di determinare se la soluzione trovata è la migliore possibile. % Cita https://www.ibm.com/docs/en/icos/22.1.1?topic=heuristics-what-are
+ma non consente di determinare se la soluzione trovata è la migliore possibile
+\cite{heuristicsCplex} \cite{heuristicsBerthold}.
 L'obiettivo in questo caso non è quello di trovare una soluzione ottima ma di
-ottenerne una ammissibile in poco tempo.
+ottenerne una ammissibile di alta qualità e in poco tempo.
 L'approccio utilizzato dall'ACS è quello di risolvere, in maniera iterativa,
 molteplici \emph{sub-MIP} ricavati a partire dal problema principale.
 I sub-MIP considerati appartengono ad una delle seguenti due tipologie:
@@ -322,14 +326,16 @@ I sub-MIP considerati appartengono ad una delle seguenti due tipologie:
     \item \emph{OMIP}: questi problemi condividono la stessa funzione obiettivo
         del MIP di partenza e puntano ad ottimizzare il valore della soluzione.
 \end{itemize}
-Allo scopo di raggiungere questi due obiettivi, vengono risolte delle
-varianti dei sub-MIP in cui un certo numero di variabili vengono fissate.
-I problemi ausiliari vengono risolti utilizzando il B\&C.
+Allo scopo di raggiungere questi due obiettivi vengono risolte delle
+varianti in cui un certo numero di variabili vengono fissate.
+L'ACS ricava una soluzione ammissibile per MIP risolvendo molteplici
+sub-MIP con il B\&C.
 
-L'ACS non viene proposto come algoritmo sostitutivo ai due introdotti
+Sebbene possa essere utilizzato come algoritmo standalone,
+l'ACS non viene proposto come algoritmo sostitutivo ai due introdotti
 precedentemente ma come uno strumento aggiuntivo da integrare per velocizzare
 il processo di risoluzione di un generico problema MIP.
-% Sull'euristica posso usare la doc di cplex: https://www.ibm.com/docs/en/icos/22.1.1?topic=heuristics-what-are
-Le implementazioni
-
-% TODO: Piccola parte sugli algoritmi euristici. Devo trovare un documento.
+L'implementazione allo stato dell'arte di B\&C \cite{cplex22.1.1} utilizza 
+degli euristici per ottenere soluzioni utili per la dimostrazione di ottimalità.
+L'utilizzo di questi metodi permette in molti casi di ottenere soluzioni
+di alta qualità più velocemente rispetto a sfruttare solamente branching.
