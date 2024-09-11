@@ -43,7 +43,7 @@ Dalla \ref{eq:FMIP} notiamo che una soluzione ammissibile per FMIP
 è ammissibile anche per il MIP se e solo se le variabili slack sommano
 a zero.
 FMIP non viene risolto direttamente ma vengono fissate un sottoinsieme
-$F\subseteq I$ delle variabili intere a devi valori 
+$F\subseteq I$ delle variabili intere a dei valori 
 presi dal vettore di input $[\hat x,\,\, \Delta^+,\,\, \Delta^-]$.
 La presenza delle variabili di slack permette di utilizzare un vettore $\hat x$ 
 che non è necessariamente una soluzione ammissibile, l'unica restrizione 
@@ -59,7 +59,7 @@ complessità del problema.
 \subsection{OMIP}%
 \label{sub:OMIP}
 Il secondo problema ausiliario ha come obiettivo quello di migliorare 
-il vettore parzialmente ammissibile $[\hat x,\,\, \hat \Delta^+,\,\, \hat \Delta^-]$
+il vettore parzialmente ammissibile $[\hat x,\,\, \Delta^+,\,\, \Delta^-]$
 che riceve in input.
 Il suo modello si ottiene partendo dal MIP e aggiungendo ad ogni vincolo le 
 variabili slack:
@@ -95,14 +95,14 @@ L'ACS inizia generando una soluzione di partenza intera $\hat x$, successivament
         $[\hat x,\,\, \Delta^+,\,\, \Delta^-]$.
 \end{enumerate}
 Questi quattro passi vengono ripetuti iterativamente finché l'algoritmo non
-converge ad una soluzione ammissibile, ovvero finché la somma delle variabili
-slack è maggiore strettamente di zero.
+converge ad una soluzione ammissibile, ovvero quando tutte le variabili slack
+hanno valore nullo.
 
 \begin{figure}[ht!]
 \begin{center}
     \includegraphics[scale=0.275]{img/diag_blocchi_acs}
 \end{center}
-\caption{Schema a blocchi del processo di esecuzione dell'algoritmo.}
+\caption{Schema a blocchi del processo risolutivo.}
 \end{figure}
 
 Per come sono costruiti i sub-MIP l'inammissibilità della soluzione decresce
@@ -222,16 +222,16 @@ lineare e l'ammissibilità del vettore di soluzioni iniziale.
 
 \subsection{Il fissaggio delle variabili}%
 \label{sub:Il fissaggio delle variabili}
-Una volta ottenuto un vettore di soluzioni, bisogna decidere quante e quali
-variabili variabili intere fissare prima di passare a risolvere un sub-MIP.
-Il numero di variabili da fissare influisce sulla difficoltà del sub-MIP:
-fissarne troppe poche potrebbe non semplificare abbastanza il problema ausiliario
-e dunque ottenere dei miglioramenti richiederebbe molto tempo;
-d'altro canto fissarne troppe potrebbe restringere eccessivamente la ricerca e quindi
-verrebbero ottenuti miglioramenti molto piccoli.
+Una volta ottenuto un vettore di soluzioni, prima di passare a risolvere un
+sub-MIP, bisogna decidere quante e quali variabili intere fissare.
+Il numero di variabili da fissare influisce sulla complessità del sub-MIP:
+fissarne troppe poche potrebbe non semplificare a sufficienza il problema
+ausiliario e dunque ottenere dei miglioramenti richiederebbe molto tempo;
+d'altro canto, fissarne troppe potrebbe restringere eccessivamente la ricerca
+e portare a dei minimi miglioramenti.
 
 Trovare un metodo intelligente per scegliere quali variabili fissare può essere
-molto difficile in quanto esistono molte strutture di problemi da considerare.
+molto difficile, visto che esistono molte strutture di problemi da considerare.
 L'Algoritmo~\ref{alg:varFixingSelection} implementa un'idea molto semplice
 che si adatta a qualsiasi tipo di struttura e permette di scegliere la quantità
 di variabili da fissare.

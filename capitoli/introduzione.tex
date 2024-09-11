@@ -74,7 +74,6 @@ ottima di $P$ risolvendo una sua restrizione.
 %\end{center}
 %\end{figure}
 
-\noindent
 Una ricerca viene detta \textit{esaustiva} quando l'insieme delle restrizioni
 $P_k$ ricopre l'intero spazio delle soluzioni ammissibili di $P$, ovvero 
 $\bigcup_i F(P_i) = F(P)$.
@@ -90,15 +89,13 @@ per esempio quando le possibili soluzioni del problema non sono
 in numero elevato e sono computazionalmente poco costose.
 
 Un algoritmo di ricerca esaustiva più avanzato è la \textit{ricerca ad albero}.
-L'algoritmo divide ricorsivamente lo spazio di ricerca di $P$ fino ad ottenere
+Lo spazio di ricerca di $P$ viene diviso ricorsivamente fino ad ottenere
 delle restrizioni (corrispondenti alle foglie dell'albero) sufficientemente
 facili da risolvere.
 Il caso peggiore ha prestazioni esponenziali e si verifica quando tutte le 
 foglie corrispondono a restrizioni di $P$ in cui $x$ è fissato ad un valore 
 appartenente al dominio $D$, in altre parole l'algoritmo diventa identico
 al generate and test.
-L'algoritmo per la risoluzione di problemi di programmazione lineare intera 
-che introdurremo successivamente, si basa sulla ricerca ad albero.
 
 L'ultima tipologia di ricerca che introduciamo è quella \emph{euristica}.
 La ricerca euristica permette di ottenere una soluzione del problema $P$
@@ -106,7 +103,6 @@ più velocemente rispetto ad una ricerca esaustiva.
 Il vantaggio di questo approccio è proprio la velocità mentre lo svantaggio
 principale è che in generale gli algoritmi euristici non sono ottimi, ovvero
 non trovano una soluzione ottima ma ne trovano una ammissibile.
-L'ACS si basa sulla ricerca euristica.
 
 \subsection{Rilassamento}%
 \label{sub:Rilassamento}
@@ -169,16 +165,15 @@ Programming}) è definito come segue:
 \begin{equation}
     P:
     \begin{cases}
-        \text{min}\,cx\\
+        \text{min}\,c^tx\\
         a_ix \sim b_i & i=1,\ldots,m\\
         l_j \leq x_j \leq u_j & j = 1, \ldots, n = N\\
         x_j \in \Z & \forall j \in J\subseteq N = \{1,\ldots, n\}
     \end{cases}
 \end{equation}
 dove $\sim \in \{\leq, \geq, =\}$.
-Troviamo gli stessi vincoli che si trovano in \ref{eq:lpDef},
-in aggiunta è presente il vincolo che alcune delle variabili devono assumere
-valori interi.
+Rispetto alla \ref{eq:lpDef} viene introdotto in aggiunta il vincolo che alcune
+delle variabili devono assumere valori interi.
 
 Si riescono a modellare molti più problemi con la programmazione lineare
 intera rispetto alla programmazione lineare.
@@ -191,12 +186,13 @@ generica tra cui i problemi di programmazione lineare intera.
 Il B\&B implementa una ricerca ad albero che permette di 
 ricavare una soluzione ottima del problema considerato.
 
-L'algoritmo inizia dal nodo radice il quale rappresenta il problema MIP $P$
-che vogliamo risolvere.
+L'algoritmo inizia dal nodo radice il quale rappresenta il problema MIP
+che vogliamo risolvere. Indichiamo questo problema con $P$.
 \begin{enumerate}
     \item Si considera il rilassamento $R$ di $P$ ottenuto rimuovendo 
-        il vincolo di interezza sulle variabili. $R$ è un problema di programmazione 
-        lineare ed è quindi più semplice da risolvere.
+        il vincolo di interezza alle variabili.
+        $R$ è un problema di programmazione lineare ed è quindi più semplice
+        da risolvere.
         Si possono presentare tre casi:
         \begin{enumerate}
             \item Se $F(R) = \varnothing$ allora $F(P) = \varnothing$ quindi
@@ -205,7 +201,8 @@ che vogliamo risolvere.
                 allora $x^*$ è ottima per $P$ e l'algoritmo termina.
             \item Se invece $x^* \notin F(P)$ significa che 
                 la soluzione trovata non rispetta almeno un vincolo di interezza,
-                allora abbiamo trovato un \emph{limite inferiore} sull'ottimo di $P$.
+                in questo caso abbiamo trovato un \emph{limite inferiore}
+                sull'ottimo di $P$.
         \end{enumerate}
         Se ci ritroviamo nel caso $(c)$ allora l'algoritmo prosegue.
 
@@ -217,7 +214,7 @@ che vogliamo risolvere.
         di interezza, ovvero
         $ \exists\,j \in J \,:\, x^*_j \notin \Z$.
         Di conseguenza due nodi figli possono essere creati imponendo a ciascuno
-        uno dei seguenti due vincoli aggiuntivi:
+        uno dei due seguenti vincoli aggiuntivi:
         \begin{equation}
             x_j \leq \lfloor x^*_j \rfloor,\quad x_j \geq \lceil x^*_j \rceil.
         \end{equation}
@@ -242,17 +239,17 @@ che vogliamo risolvere.
                 (\emph{prouning by infeasibility}).
             \item Se esiste una soluzione ottima $\overline{x}\in F(R_i)$
                 tale che $\overline{x} \in F(P_i)$ allora abbiamo trovato un limite
-                superiore $\overline{z} = c \overline{x}$ valido per la 
+                superiore $\overline{z} = c^t\overline{x}$ valido per la 
                 soluzione ottima di $P$. $\overline{z}$ viene chiamato
                 \emph{incumbent}: si tratta della migliore soluzione attuale di
                 $P$.
-            \item Se $\overline{x} \notin F(P_i)$, si confronta l'incumbent
-                con la soluzione trovata: se $c \overline{x} \geq \overline{z}$
+            \item Se $\overline{x} \notin F(P_i)$ si confronta l'incumbent
+                con la soluzione trovata: se $c^t \overline{x} \geq \overline{z}$
                 allora il nodo può essere scartato (\emph{prouning by optimality})
-                in quanto $c \overline{x}$ è il limite inferiore sull'ottimo
+                in quanto $c^t\overline{x}$ è il limite inferiore sull'ottimo
                 di $P_i$, pertanto non può portare ad una soluzione migliore
                 dell'attuale incumbent.
-            \item Altrimenti ($c \overline{x} < \overline{z}$)
+            \item Altrimenti ($c^t\overline{x} < \overline{z}$)
                 è necessario fare branching sul nodo ed aggiungere i suoi
                 figli a $Q$.
         \end{enumerate}
@@ -268,7 +265,6 @@ che vogliamo risolvere.
         soluzione ottima di $P$ trovata dall'algoritmo.
 \end{enumerate}
 
-% TODO: Metto la figura dell'andamento dell'upper e lower bound?
 \begin{figure}[ht!]
 \begin{center}
     \includegraphics[scale=0.6]{img/upper_lower}
@@ -279,12 +275,11 @@ che vogliamo risolvere.
 
 \begin{figure}[ht!]
 \begin{center}
-    \includegraphics[scale=0.5]{./img/branchandbound.png}
+    \includegraphics[scale=0.45]{./img/branchandbound.png}
 \end{center}
 \caption{Ricerca ad albero di un algoritmo B\&B.}
 \end{figure}
 
-% TODO: Metto la parte sul B&C? Io due righe le scrivo in caso poi le tolgo.
 \subsection{Algoritmo Branch and Cut}%
 \label{sub:Algoritmo Branch and Cut}
 L'algoritmo B\&C è stato sviluppato appositamente per risolvere i problemi di
@@ -308,15 +303,15 @@ ammissibile.}
 \section{Alternating Criteria Search}%
 \label{sec:Alternating Criteria Search}
 L'ACS è un algoritmo euristico che opera su problemi MIP.
-In generale gli euristici sono metodi che tentano di trovare una buona
-soluzione impiegando poco tempo ed effettuando delle scelte basate su
-alcune utili caratteristiche del problema considerato.
+In generale gli euristici sono metodi che cercano di trovare una buona
+soluzione impiegando poco tempo ed effettuando scelte basate su
+alcune caratteristiche rilevanti del problema considerato.
 Nel nostro contesto un algoritmo euristico applicato ad un problema
 MIP permette di ottenere una soluzione che rispetta tutti i vincoli del problema
 ma non consente di determinare se la soluzione trovata è la migliore possibile
 \cite{heuristicsCplex} \cite{heuristicsBerthold}.
 L'obiettivo in questo caso non è quello di trovare una soluzione ottima ma di
-ottenerne una ammissibile di alta qualità e in poco tempo.
+ottenerne una ammissibile di alta qualità.
 L'approccio utilizzato dall'ACS è quello di risolvere, in maniera iterativa,
 molteplici \emph{sub-MIP} ricavati a partire dal problema principale.
 I sub-MIP considerati appartengono ad una delle seguenti due tipologie:
@@ -331,11 +326,13 @@ varianti in cui un certo numero di variabili vengono fissate.
 L'ACS ricava una soluzione ammissibile per MIP risolvendo molteplici
 sub-MIP con il B\&C.
 
-Sebbene possa essere utilizzato come algoritmo standalone,
-l'ACS non viene proposto come algoritmo sostitutivo ai due introdotti
-precedentemente ma come uno strumento aggiuntivo da integrare per velocizzare
-il processo di risoluzione di un generico problema MIP.
-L'implementazione allo stato dell'arte di B\&C \cite{cplex22.1.1} utilizza 
-degli euristici per ottenere soluzioni utili per la dimostrazione di ottimalità.
+L'ACS trova la sua utilità sia come algoritmo standalone per risolvere
+problemi molto difficili che richiedono elevati costi computazionali per
+raggiungere l'ottimalità, sia come strumento aggiuntivo da integrare ad
+un algoritmo esatto per velocizzare il processo di risoluzione di un
+generico problema MIP.
+Infatti l'implementazione allo stato dell'arte di B\&C \cite{cplex22.1.1}
+utilizza degli euristici per ottenere soluzioni utili per la dimostrazione 
+di ottimalità.
 L'utilizzo di questi metodi permette in molti casi di ottenere soluzioni
-di alta qualità più velocemente rispetto a sfruttare solamente branching.
+di alta qualità più velocemente rispetto a sfruttare solamente il branching.
