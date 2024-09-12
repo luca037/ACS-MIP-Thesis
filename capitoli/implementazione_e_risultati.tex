@@ -60,9 +60,8 @@ L'intera implementazione è disponibile online \cite{repo}.
 \subsection{I parametri}%
 \label{sub:I parametri}
 Di seguito viene riportata una lista contenente tutti i parametri da fissare
-prima di lanciare l'algoritmo.
-Per ognuno viene specificato il nome utilizzato nell'implementazione e una
-breve descrizione.
+prima di lanciare l'algoritmo, per ognuno viene specificato il nome e
+una breve descrizione.
 Da notare che alcuni parametri sono stati fissati ad un valore costante e non
 sono più stati modificati, il questo caso viene riportato il valore assegnato.
 \begin{itemize}
@@ -73,12 +72,14 @@ sono più stati modificati, il questo caso viene riportato il valore assegnato.
     \item \verb|BOUND_CONSTANT|: fa riferimento al parametro $c_b$ introdotto
         nell'Algoritmo~\ref{alg:startingVectorHeuristic}.
         Il suo valore è stato fissato a $10^6$.
-    \item \verb|rho|: percentuale di variabili intere fissate nei sub-MIP.
+    \item $\rho$: percentuale di variabili intere fissate nei sub-MIP
+        (vedi Algoritmo~\ref{alg:varFixingSelection}).
     \item \verb|dettime_lim|: limite di tempo espresso in \emph{ticks}.
         Si tratta del tempo massimo che ha a disposizione l'ottimizzatore di
         CPLEX per risolvere un problema.
-    \item \verb|theta|: percentuale di valori generati randomicamente ad
-        ogni iterazione dell'algoritmo che genera il vettore iniziale.
+    \item $\theta$: percentuale di valori generati randomicamente ad
+        ogni iterazione dell'algoritmo che genera il vettore iniziale
+        (vedi Algoritmo~\ref{alg:startingVectorHeuristic}).
     \item \verb|seed|: seme utilizzato per la generazione di numeri 
         pseudo-casuali.
 \end{itemize}
@@ -89,13 +90,12 @@ processo di debugging, sono state utilizzate sequenze di numeri pseudo-casuali
 ottenute tramite l'ausilio della funzione \verb|srand()|, passando come
 argomento il parametro \verb|seed|.
 Sono stati utilizzati i seguenti semi $\{19410524,\, 7010598105,\, 715471\}$.
-Il valore di \verb|theta| è stato fissato a $1\%$ in quanto si è notato che per
+Il valore di $\theta$ è stato fissato a $1\%$ in quanto si è notato che per
 la maggior parte dei 240 problemi considerati, il rilassamento lineare di FMIP
 non richiede troppo tempo per essere risolto.
 Nel caso in cui un rilassamento risulta essere troppo complesso e viene sforato
-il limite di tempo imposto da \verb|dettime_lim|, \verb|theta| viene incrementato
+il limite di tempo imposto da \verb|dettime_lim|, $\theta$ viene incrementato
 del $50\%$.
-Il parametro \verb|rho| è stato testato sui seguenti valori $\{20,\, 50,\, 80\%\}$.
 Infine $\verb|dettime_lim|$ è stato calcolato utilizzando la formula
 \begin{equation}
     \verb|dettime_lim| = \max \left( lower,\, \min \left( \frac{nz}{100}, \, 10^5\right)\right)
@@ -120,22 +120,86 @@ Trattandosi di un algoritmo euristico non è possibile dimostrare rigorosamente
 che una combinazione di valori assegnati ai parametri è migliore rispetto ad
 un altra.
 Si tratta quindi di verificare in via sperimentale quale combinazione
-fornisce i risultati migliori.
-Inizialmente i parametri sono stati fissati a dei valori arbitrari,
-successivamente sono state introdotte delle modifiche con l'intento di
-migliorare la qualità dei risultati.
-
-Una volta settati i valori di \verb|MAX_ATTEMPTS| e \verb|dettime_lim|
-è stato svolto:
-\begin{itemize}
-    \item un test per ciascun seme con \verb|theta| a $20\%$;
-    \item un test per ciascun seme con \verb|theta| a $50\%$;
-    \item un test per ciascun seme con \verb|theta| a $80\%$.
-\end{itemize}
-Per un totale complessivo di 9 test.
-Una volta ricavati i risultati,
+offre le migliori prestazioni.
+Per semplificare l'analisi i parametri sono stati considerati indipendenti.
+Di conseguenza sono stati esaminati uno alla volta e per ognuno è stato
+scelto il valore che ha prodotto i risultati migliori.
+Infine, per ogni combinazione di parametri, sono stati svolti tre test,
+uno per ciascun seme, e i risultati finali sono stati calcolati come media
+aritmetica.
 
 \subsection{I risultati}%
 \label{sub:I risultati}
 
-% TODO: Parlare dell'indipendenza dei parametri
+\paragraph{Primo test}%
+\label{par:Primo test}
+Nel primo test è stato preso in considerazione il parametro $\verb|theta|\in \{20,\,50,\,80\%\}$.
+
+\begin{table}[ht!]
+\centering
+\begin{tabular}{cc}
+\hline
+\textbf{Parametro} & \textbf{Valore} \\
+\hline
+\verb|MAX_ITR| & 10 \\
+\verb|MAX_ATTEMPTS| & 1 \\
+\verb|dettime_lim| &  $\max \left( 10^3,\, \min \left( \frac{nz}{100}, \, 10^5\right)\right)$\\
+$\theta$ & $1\%$\\
+\hline
+\end{tabular}
+\caption{Parametri utilizzati per il primo test.}
+\end{table}
+
+\begin{table}[ht!]
+\centering
+\begin{tabular}{ccccc}
+\hline
+$\rho$ & \textbf{Prob. risolti} & \textbf{Iteraz. medie} & \textbf{Tempo medio} [s] & \textbf{Qualità media}\\
+\hline
+20\% & 132 & 1.89 & 21.41 & 18.67\% \\
+50\% & 115 & 2.74 & 20.37 & 34.62\% \\
+80\% & 75 & 3.32 & 7.93& 58.5\% \\
+\hline
+\end{tabular}
+\caption{Risultati del primo test.}
+\end{table}
+
+\begin{figure}[ht!]
+\begin{center}
+    \includegraphics[scale=0.7]{img/test1_bar}
+\end{center}
+\caption{Istogramma della qualità nel caso migliore.}
+\end{figure}
+
+\paragraph{Secondo test}%
+\label{par:Secondo test}
+Nel secondo test è stato considerato il parametro \verb|dettime_lim|.
+
+\begin{table}[ht!]
+\centering
+\begin{tabular}{cc}
+\hline
+\textbf{Parametro} & \textbf{Valore} \\
+\hline
+\verb|MAX_ITR| & 10 \\
+\verb|MAX_ATTEMPTS| & 1 \\
+$\theta$ & 1\%\\
+$\rho$ & 20\%\\
+\hline
+\end{tabular}
+\caption{Parametri utilizzati per il secondo test.}
+\end{table}
+
+\begin{table}[ht!]
+\centering
+\begin{tabular}{ccccc}
+\hline
+ & \textbf{Prob. risolti} & \textbf{Iteraz. medie} & \textbf{Tempo medio} [s] & \textbf{Qualità media}\\
+\hline
+ & 132 & 1.89 & 21.41 & 18.67\% \\
+ & 115 & 2.74 & 20.37 & 34.62\% \\
+ & 75 & 3.32 & 7.93& 58.5\% \\
+\hline
+\end{tabular}
+\caption{Risultati del primo test.}
+\end{table}
