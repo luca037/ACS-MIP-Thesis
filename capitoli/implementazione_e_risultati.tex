@@ -98,11 +98,13 @@ il limite di tempo imposto da \verb|dettime_lim|, $\theta$ viene incrementato
 del $50\%$.
 Infine $\verb|dettime_lim|$ è stato calcolato utilizzando la formula
 \begin{equation}
-    \verb|dettime_lim| = \max \left( lower,\, \min \left( \frac{nz}{100}, \, 10^5\right)\right)
+    \verb|dettime_lim| = \mu(x, y) = \max( x,\, \min( {nz}/{y}, \, 10^5))
 \end{equation}
-dove $nz$ indica il numero di valori diversi da zero all'interno della
-matrice dei vincoli del problema MIP che vogliamo risolvere, mentre
-$lower$ è il minimo valore di tempo che vogliamo assegnare al parametro.
+dove $\mu$ è una funzione, i suoi argomenti sono:
+$nz$, il numero di valori diversi da zero all'interno della
+matrice dei vincoli del problema MIP che vogliamo risolvere; $y$ un qualsiasi
+valore reale;
+$x$ è il minimo valore di tempo che vogliamo assegnare al parametro.
 Il tempo massimo assegnabile è stato fissato a $10^5$.
 Utilizzare questa formula permette di assegnare in maniera dinamica
 il tempo limite entro il quale l'ottimizzatore CPLEX può trovare una soluzione:
@@ -133,7 +135,7 @@ aritmetica.
 
 \paragraph{Primo test}%
 \label{par:Primo test}
-Nel primo test è stato preso in considerazione il parametro $\verb|theta|\in \{20,\,50,\,80\%\}$.
+Nel primo test è stato preso in considerazione il parametro $\theta\in\{20,\,50,\,80\%\}$.
 
 \begin{table}[ht!]
 \centering
@@ -164,11 +166,32 @@ $\rho$ & \textbf{Prob. risolti} & \textbf{Iteraz. medie} & \textbf{Tempo medio} 
 \caption{Risultati del primo test.}
 \end{table}
 
+%\begin{figure}[h]
+%    \centering
+%    \begin{minipage}{0.47\textwidth}
+%        \centering
+%        \includegraphics[width=\textwidth]{img/test1_bar}
+%        \caption{Istogramma della qualità nel caso migliore.}
+%    \end{minipage}
+%    \begin{minipage}{0.45\textwidth}
+%        \centering
+%        \includegraphics[width=\textwidth]{img/test1_bar_time}
+%        \caption{Istogramma dei tempi nel caso migliore.}
+%    \end{minipage}
+%\end{figure}
+
 \begin{figure}[ht!]
 \begin{center}
-    \includegraphics[scale=0.7]{img/test1_bar}
+    \includegraphics[scale=0.7]{img/test1_bar_quality}
 \end{center}
 \caption{Istogramma della qualità nel caso migliore.}
+\end{figure}
+
+\begin{figure}[ht!]
+\begin{center}
+    \includegraphics[scale=0.7]{img/test1_bar_time}
+\end{center}
+\caption{Istogramma dei tempi nel caso migliore.}
 \end{figure}
 
 \paragraph{Secondo test}%
@@ -194,11 +217,11 @@ $\rho$ & 20\%\\
 \centering
 \begin{tabular}{ccccc}
 \hline
- & \textbf{Prob. risolti} & \textbf{Iteraz. medie} & \textbf{Tempo medio} [s] & \textbf{Qualità media}\\
+\verb|dettime_lim| & \textbf{Prob. risolti} & \textbf{Iteraz. medie} & \textbf{Tempo medio} [s] & \textbf{Qualità media}\\
 \hline
- & 132 & 1.89 & 21.41 & 18.67\% \\
- & 115 & 2.74 & 20.37 & 34.62\% \\
- & 75 & 3.32 & 7.93& 58.5\% \\
+$\mu(10^3, 50)$ & 139 & 1.98 & 62.78 & 15.86\% \\
+$\mu(10 \cdot 10^3, 100)$ & 157 & 1.88 & 33.23 & 16.46\% \\
+$\mu(15 \cdot 10^3, 100)$ & & & & \% \\
 \hline
 \end{tabular}
 \caption{Risultati del primo test.}
