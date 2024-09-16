@@ -67,19 +67,19 @@ sono più stati modificati, il questo caso viene riportato il valore assegnato.
 \begin{itemize}
     \item \verb|MAX_ITR|: massimo numero di iterazioni dell'algoritmo.
         Una iterazione è completa quando viene risolto FMIP e successivamente
-        OMIP. Il suo valore è stato fissato a 10.
-    \item \verb|MAX_ATTEMPT|: massimo numero di tentativi per risolvere OMIP.
-    \item \verb|BOUND_CONSTANT|: fa riferimento al parametro $c_b$ introdotto
-        nell'Algoritmo~\ref{alg:startingVectorHeuristic}.
-        Il suo valore è stato fissato a $10^6$.
-    \item $\rho$: percentuale di variabili intere fissate nei sub-MIP
-        (vedi Algoritmo~\ref{alg:varFixingSelection}).
+        OMIP.
     \item \verb|dettime_lim|: limite di tempo espresso in \emph{ticks}.
         Si tratta del tempo massimo che ha a disposizione l'ottimizzatore di
         CPLEX per risolvere un problema.
+    \item \verb|BOUND_CONSTANT|: fa riferimento al parametro $c_b$ introdotto
+        nell'Algoritmo~\ref{alg:startingVectorHeuristic}.
+        Il suo valore è stato fissato a $10^6$.
     \item $\theta$: percentuale di valori generati randomicamente ad
         ogni iterazione dell'algoritmo che genera il vettore iniziale
         (vedi Algoritmo~\ref{alg:startingVectorHeuristic}).
+        Il suo valore è stato fissato a $1\%$.
+    \item $\rho$: percentuale di variabili intere fissate nei sub-MIP
+        (vedi Algoritmo~\ref{alg:varFixingSelection}).
     \item \verb|seed|: seme utilizzato per la generazione di numeri 
         pseudo-casuali.
 \end{itemize}
@@ -110,13 +110,74 @@ Utilizzare questa formula permette di assegnare in maniera dinamica
 il tempo limite entro il quale l'ottimizzatore CPLEX può trovare una soluzione:
 più è è grande $nz$ e più tempo avrà a disposizione.
 
-\subsection{Pseudocodice dettagliato}%
-\label{sub:Pseudocodice dettagliato}
+\subsection{Pseudocodice}%
+\label{sub:Pseudocodice}
+Di seguito viene riportato lo pseudocodice dell'algoritmo.
+Si tratta di una versione più dettagliata dell'Algoritmo~\ref{alg:acs}
+in cui sono presenti anche le chiamate alle funzioni che implementano
+l'Algoritmo~\ref{alg:startingVectorHeuristic} e l'Algoritmo~\ref{alg:varFixingSelection}.
 
-\section{I test}%
-\label{sec:I test}
+\begin{minipage}{\linewidth}
+\begin{lstlisting}[mathescape=true]
+AlternatingCriteriaSearch(mip, MAX_ITR, dettime_lim, $\theta$, $\rho$, BOUND_CONSTANT) {
+    fmip = create_fmip(mip), omip = create_omip(mip)
+    $\hat x$ = init_starting_vector($\theta$, BOUND_CONSTANT)
 
-\subsection{Metodo seguito}%
+    sum_slack = -1
+    for (itr = 0; itr < MAX_ITR && sum_slack != 0; itr++) {
+        variable_fixing(fmip, $\rho$)                 // Fissa le variabili.
+        $[\hat x, \Delta^+, \Delta^-]$ = solve_fmip(fmip, dettime_lim)
+        restore_bounds(fmip, mip)               // Rimuove le variabili fissate.
+        sum_slack = $\sum_i \Delta^+_i + \Delta^-_i$
+
+        variable_fixing(omip, $\rho$)
+        $[\hat x, \Delta^+, \Delta^-]$ = solve_omip(omip, sum_slack, dettime_lim)
+        restore_bounds(omip, mip)
+        sum_slack = $\sum_i \Delta^+_i + \Delta^-_i$
+    }
+
+    if (sum_slack == 0) {                           // Miglioramento qualita'.
+        best_solution = $c^t \hat x$
+        while (1) {
+            variable_fixing(omip, $\rho$)
+            $[\hat x, \Delta^+, \Delta^-]$ = solve_omip(omip, dettime_lim)
+            restore_bounds(omip, mip)
+
+            if ($c^t \hat x$ < best_solution) best_solution = $c^t \hat x$
+            else break
+        }
+    }
+    
+    return $[\hat x, \Delta^+, \Delta^-]$
+}
+\end{lstlisting}
+\end{minipage}
+
+Le funzioni \verb|solve_fmip| e \verb|solve_omip| ricevono come argomento
+il tempo limite entro il quale deve essere trovata una soluzione per il sub-MIP.
+Il risolutore riesce sempre a trovare una soluzione ammissibile sia per FMIP
+che per OMIP.
+Questo comportamento è stato ottenuto sfruttando il meccanismo dei
+\emph{MIP starts} offerti dalla libreria CPLEX \cite{cplexMipStarts}.
+Prima di risolvere un problema, è possibile passare un MIP start, ovvero una 
+soluzione, che verrà utilizzata dall'ottimizzatore come punto di partenza
+nel processo di risoluzione.
+Siccome una soluzione ammissibile per FMIP lo è anche per OMIP, nel
+nostro caso risulta vantaggioso passare come MIP start a OMIP la soluzione
+trovata da FMIP e, successivamente, passare la soluzione di OMIP
+prima di risolvere FMIP.
+In questo modo, oltre a garantire la presenza di una soluzione ammissibile,
+ci si assicura che la somma delle variabili slack diminuisce in maniera 
+monotona di iterazione in iterazione.
+
+La fase di miglioramento della qualità della soluzione segue una
+semplice logica: si risolve iterativamente OMIP finché non è più
+possibile ottenere un miglioramento.
+Anche se idealmente questa fase potrebbe continuare all'infinito, nella pratica
+si è osservato che il ciclo termina perché viene trovata la stessa soluzione
+due volte di fila.
+
+\section{Metodo adottato per i test}%
 \label{sub:Metodo seguito}
 Trattandosi di un algoritmo euristico non è possibile dimostrare rigorosamente
 che una combinazione di valori assegnati ai parametri è migliore rispetto ad
@@ -130,11 +191,11 @@ Infine, per ogni combinazione di parametri, sono stati svolti tre test,
 uno per ciascun seme, e i risultati finali sono stati calcolati come media
 aritmetica.
 
-\subsection{I risultati}%
+\section{Risultati}%
 \label{sub:I risultati}
 
-\paragraph{Primo test}%
-\label{par:Primo test}
+\subsection{Primo test: scelta parametro \texorpdfstring{$\alpha$}{alpha}}%
+\label{sub:Primo test: scelta parametro alpha}
 Nel primo test è stato preso in considerazione il parametro $\theta\in\{20,\,50,\,80\%\}$.
 
 \begin{table}[ht!]
@@ -143,10 +204,10 @@ Nel primo test è stato preso in considerazione il parametro $\theta\in\{20,\,50
 \hline
 \textbf{Parametro} & \textbf{Valore} \\
 \hline
-\verb|MAX_ITR| & 10 \\
-\verb|MAX_ATTEMPT| & 1 \\
+\verb|MAX_ITR| & 10\\
 \verb|dettime_lim| &  $\mu(10^3, 100)$\\
 $\theta$ & $1\%$\\
+$\rho$ & \emph{Soggetto test}\\
 \hline
 \end{tabular}
 \caption{Parametri utilizzati per il primo test.}
@@ -158,7 +219,7 @@ $\theta$ & $1\%$\\
 \hline
 $\rho$ & \textbf{Prob. risolti} & \textbf{Iteraz. medie} & \textbf{Tempo medio} [s] & \textbf{Qualità media}\\
 \hline
-20\% & 132 & 1.89 & 21.41 & 18.67\% \\
+\rowcolor{lightgray} 20\% & 132 & 1.89 & 21.41 & 18.67\% \\
 50\% & 115 & 2.74 & 20.37 & 34.62\% \\
 80\% & 75 & 3.32 & 7.93& 58.5\% \\
 \hline
@@ -166,37 +227,55 @@ $\rho$ & \textbf{Prob. risolti} & \textbf{Iteraz. medie} & \textbf{Tempo medio} 
 \caption{Risultati del primo test.}
 \end{table}
 
-%\begin{figure}[h]
-%    \centering
-%    \begin{minipage}{0.47\textwidth}
-%        \centering
-%        \includegraphics[width=\textwidth]{img/test1_bar}
-%        \caption{Istogramma della qualità nel caso migliore.}
-%    \end{minipage}
-%    \begin{minipage}{0.45\textwidth}
-%        \centering
-%        \includegraphics[width=\textwidth]{img/test1_bar_time}
-%        \caption{Istogramma dei tempi nel caso migliore.}
-%    \end{minipage}
+%\begin{figure}[ht!]
+%\begin{center}
+%    \includegraphics[scale=0.7]{img/test1_bar_quality}
+%\end{center}
+%\caption{Istogramma della qualità del primo test (caso migliore).}
+%\end{figure}
+%
+%\begin{figure}[ht!]
+%\begin{center}
+%    \includegraphics[scale=0.7]{img/test1_bar_time}
+%\end{center}
+%\caption{Istogramma dei tempi del primo test (caso migliore).}
 %\end{figure}
 
-\begin{figure}[ht!]
-\begin{center}
-    \includegraphics[scale=0.7]{img/test1_bar_quality}
-\end{center}
-\caption{Istogramma della qualità del primo test (caso migliore).}
-\end{figure}
 
-\begin{figure}[ht!]
-\begin{center}
-    \includegraphics[scale=0.7]{img/test1_bar_time}
-\end{center}
-\caption{Istogramma dei tempi del primo test (caso migliore).}
-\end{figure}
-
-\paragraph{Secondo test}%
-\label{par:Secondo test}
+\subsection{Secondo test: scelta parametro dettime\texorpdfstring{\_}{}lim}%
+\label{sub:Secondo test: scelta parametro dettime-lim}
 Nel secondo test è stato considerato il parametro \verb|dettime_lim|.
+
+% OLD
+%\begin{table}[ht!]
+%\centering
+%\begin{tabular}{cc}
+%\hline
+%\textbf{Parametro} & \textbf{Valore} \\
+%\hline
+%\verb|MAX_ITR| & 10 \\
+%\verb|MAX_ATTEMPT| & 1 \\
+%$\theta$ & 1\%\\
+%$\rho$ & 20\%\\
+%\hline
+%\end{tabular}
+%\caption{Parametri utilizzati per il secondo test.}
+%\end{table}
+%
+%\begin{table}[ht!]
+%\centering
+%\begin{tabular}{ccccc}
+%\hline
+%\verb|dettime_lim| & \textbf{Prob. risolti} & \textbf{Iteraz. medie} & \textbf{Tempo medio} [s] & \textbf{Qualità media}\\
+%\hline
+%%$\mu(10^3, 50)$ & 139 & 1.98 & 62.78 & 15.86\% \\
+%$\mu(10 \cdot 10^3, 100)$ & 157 & 1.88 & 33.23 & 16.46\% \\
+%$\mu(15 \cdot 10^3, 100)$ & 159 & 1.9 & 44.23 & 15.67\% \\
+%$\mu(20 \cdot 10^3, 100)$ & 164 & 1.96 & 54.84 & 15.88\% \\
+%\hline
+%\end{tabular}
+%\caption{Risultati del primo test.}
+%\end{table}
 
 \begin{table}[ht!]
 \centering
@@ -205,7 +284,7 @@ Nel secondo test è stato considerato il parametro \verb|dettime_lim|.
 \textbf{Parametro} & \textbf{Valore} \\
 \hline
 \verb|MAX_ITR| & 10 \\
-\verb|MAX_ATTEMPT| & 1 \\
+\verb|dettime_lim| & \emph{Soggetto test}\\
 $\theta$ & 1\%\\
 $\rho$ & 20\%\\
 \hline
@@ -219,32 +298,31 @@ $\rho$ & 20\%\\
 \hline
 \verb|dettime_lim| & \textbf{Prob. risolti} & \textbf{Iteraz. medie} & \textbf{Tempo medio} [s] & \textbf{Qualità media}\\
 \hline
-$\mu(10^3, 50)$ & 139 & 1.98 & 62.78 & 15.86\% \\
-$\mu(10 \cdot 10^3, 100)$ & 157 & 1.88 & 33.23 & 16.46\% \\
-$\mu(15 \cdot 10^3, 100)$ & 159 & 1.9 & 44.23 & 15.67\% \\
-$\mu(20 \cdot 10^3, 100)$ & 164 & 1.96 & 54.84 & 15.88\% \\
+$\mu(10 \cdot 10^3, 100)$ & 179 & 2.2 & 46.01 & 17.91\% \\
+$\mu(15 \cdot 10^3, 100)$ & 181 & 2.16 & 55.77 & 16.86\% \\
+\rowcolor{lightgray} $\mu(20 \cdot 10^3, 100)$ & 186 & 2.3 & 72.06 & 17.79\% \\
 \hline
 \end{tabular}
-\caption{Risultati del primo test.}
+\caption{Risultati del secondo test.}
 \end{table}
 
-\begin{figure}[ht!]
-\begin{center}
-    \includegraphics[scale=0.7]{img/test2_bar_quality}
-\end{center}
-\caption{Istogramma della qualità del secondo test (caso migliore).}
-\end{figure}
+%\begin{figure}[ht!]
+%\begin{center}
+%    \includegraphics[scale=0.7]{img/test2_bar_quality}
+%\end{center}
+%\caption{Istogramma della qualità del secondo test (caso migliore).}
+%\end{figure}
+%
+%\begin{figure}[ht!]
+%\begin{center}
+%    \includegraphics[scale=0.7]{img/test2_bar_time}
+%\end{center}
+%\caption{Istogramma dei tempi del secondo test (caso migliore).}
+%\end{figure}
 
-\begin{figure}[ht!]
-\begin{center}
-    \includegraphics[scale=0.7]{img/test2_bar_time}
-\end{center}
-\caption{Istogramma dei tempi del secondo test (caso migliore).}
-\end{figure}
-
-\paragraph{Terzo test}%
-\label{par:Terzo test}
-Il parametro preso in considerazione in questo test è \verb|MAX_ATTEMPT|.
+\subsection{Terzo test: scelta parametro MAX\texorpdfstring{\_}{}ITR}%
+\label{sub:Terzo test: scelta parametro MAX-ITR}
+Il parametro preso in considerazione in questo test è \verb|MAX_ITR|.
 
 \begin{table}[ht!]
 \centering
@@ -252,8 +330,7 @@ Il parametro preso in considerazione in questo test è \verb|MAX_ATTEMPT|.
 \hline
 \textbf{Parametro} & \textbf{Valore} \\
 \hline
-\verb|MAX_ITR| & 10 \\
-%\verb|MAX_ATTEMPT| & 1 \\
+\verb|MAX_ITR| & \emph{Soggetto test}\\
 \verb|dettime_lim| & $\mu(20\cdot 10^3,100)$\\
 $\theta$ & 1\%\\
 $\rho$ & 20\%\\
@@ -266,12 +343,75 @@ $\rho$ & 20\%\\
 \centering
 \begin{tabular}{ccccc}
 \hline
-\verb|MAX_ATTEMPT| & \textbf{Prob. risolti} & \textbf{Iteraz. medie} & \textbf{Tempo medio} [s] & \textbf{Qualità media}\\
+\verb|MAX_ITR| & \textbf{Prob. risolti} & \textbf{Iteraz. medie} & \textbf{Tempo medio} [s] & \textbf{Qualità media}\\
 \hline
-2 & 174 & 2.01 & 61.8 & 16.1\% \\
-4 & 176 & 2.11 & 64.14 & 16.55\% \\
-5 &  &  &  & \% \\
+11 & 187 & 2.32 & 72.32 & 17.82\% \\
+12 & 187 & 2.33 & 72.73 & 17.81\% \\
+\rowcolor{lightgray} 13 & 188 & 2.37 & 74.38 & 17.82\% \\
 \hline
 \end{tabular}
 \caption{Risultati del terzo test.}
 \end{table}
+
+%\begin{figure}[ht!]
+%\begin{center}
+%    \includegraphics[scale=0.7]{img/test3_bar_quality}
+%\end{center}
+%\caption{Istogramma della qualità del terzo test (caso migliore).}
+%\end{figure}
+%
+%\begin{figure}[ht!]
+%\begin{center}
+%    \includegraphics[scale=0.7]{img/test3_bar_time}
+%\end{center}
+%    \includegraphics[scale=0.7]{img/test3_bar_time}
+%\caption{Istogramma dei tempi del terzo test (caso migliore).}
+%\end{figure}
+
+\newpage
+\subsection{Istogrammi}%
+\label{sub:Istogrammi}
+In questa sezione vengono riportati gli istogrammi della qualità e dei
+tempi di esecuzione nel caso migliore per ogni test.
+
+\begin{figure}[ht!]
+\centering
+\begin{minipage}{\textwidth}
+\centering
+    \includegraphics[scale=0.7]{img/test1_bar_quality}
+    \caption{Istogramma della qualità del il primo test.}
+\end{minipage}
+\begin{minipage}{\textwidth}
+\centering
+    \includegraphics[scale=0.7]{img/test1_bar_time}
+    \caption{Istogramma dei tempi del primo test.}
+\end{minipage}
+\end{figure}
+
+\begin{figure}[ht!]
+\centering
+\begin{minipage}{\textwidth}
+\centering
+    \includegraphics[scale=0.7]{img/test2_bar_quality}
+    \caption{Istogramma della qualità del secondo test.}
+\end{minipage}
+\begin{minipage}{\textwidth}
+\centering
+    \includegraphics[scale=0.7]{img/test2_bar_time}
+    \caption{Istogramma dei tempi del secondo test.}
+\end{minipage}
+\end{figure}
+
+\begin{figure}[ht!]
+\centering
+\begin{minipage}{\textwidth}
+\centering
+    \includegraphics[scale=0.7]{img/test3_bar_quality}
+    \caption{Istogramma della qualità del terzo test.}
+\end{minipage}
+\begin{minipage}{\textwidth}
+\centering
+    \includegraphics[scale=0.7]{img/test3_bar_time}
+    \caption{Istogramma dei tempi del terzo test.}
+\end{minipage}
+\end{figure}
