@@ -133,24 +133,19 @@ una ammissibile qualitativamente buona (punto azzurro).}
         \Ensure Feasible solution $\hat x$ if found
         \State $initialize \,\,[\hat x,\, \Delta^+,\, \Delta^-]$ \Comment Soluzione intera che rispetta i limiti
         \State $slack\_sum \gets -1$
-        \While {time limit not reached}
+        \While {time limit not reached and $slack\_sum \neq 0$}
         \State $F \gets \text{randomized variable index subset, } F\subseteq I$
         \State $[\hat x,\, \Delta^+,\, \Delta^-] \gets \text{solve\_FMIP}(F,\,\hat x)$
         \State $slack\_sum\gets \sum_i \Delta^+_i + \Delta^-_i$
         \State $F \gets \text{randomized variable index subset, } F\subseteq I$
         \State $[\hat x,\, \Delta^+,\, \Delta^-] \gets \text{solve\_OMIP}(F,\,\hat x,\,sum\_slack)$
         \State $slack\_sum\gets \sum_i \Delta^+_i + \Delta^-_i$
-        \If {$slack\_sum = 0$}
-        \State break
-        \EndIf
         \EndWhile
         \If {$slack\_sum = 0$} \Comment Miglioramento qualità della soluzione
-        \State $z\gets 0$
-        \Repeat
-        \State $z \gets c^t \hat x$
+        \While {time limit not reached}
         \State $F \gets \text{randomized variable index subset, } F\subseteq I$
         \State $[\hat x,\, \Delta^+,\, \Delta^-] \gets \text{solve\_OMIP}(F,\,\hat x,\,0)$
-        \Until {$c^t \hat x < z$}
+        \EndWhile
         \EndIf
         \State \Return $[\hat x,\, \Delta^+,\, \Delta^-]$
         \State

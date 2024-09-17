@@ -120,35 +120,35 @@ l'Algoritmo~\ref{alg:startingVectorHeuristic} e l'Algoritmo~\ref{alg:varFixingSe
 \begin{minipage}{\linewidth}
 \begin{lstlisting}[mathescape=true]
 AlternatingCriteriaSearch(mip, MAX_ITR, dettime_lim, $\theta$, $\rho$, BOUND_CONSTANT) {
-    fmip = create_fmip(mip), omip = create_omip(mip)
-    $\hat x$ = init_starting_vector($\theta$, BOUND_CONSTANT)
+    fmip = create_fmip(mip);
+    omip = create_omip(mip);
+    $\hat x$ = init_starting_vector($\theta$, BOUND_CONSTANT);
 
     sum_slack = -1
     for (itr = 0; itr < MAX_ITR && sum_slack != 0; itr++) {
-        variable_fixing(fmip, $\rho$)                 // Fissa le variabili.
-        $[\hat x, \Delta^+, \Delta^-]$ = solve_fmip(fmip, dettime_lim)
-        restore_bounds(fmip, mip)               // Rimuove le variabili fissate.
-        sum_slack = $\sum_i \Delta^+_i + \Delta^-_i$
+        variable_fixing(fmip, $\rho$);                 // Fissa le variabili.
+        $[\hat x, \Delta^+, \Delta^-]$ = solve_fmip(fmip, dettime_lim);
+        restore_bounds(fmip, mip);               // Rimuove le variabili fissate.
+        sum_slack = $\sum_i \Delta^+_i + \Delta^-_i$;
 
-        variable_fixing(omip, $\rho$)
-        $[\hat x, \Delta^+, \Delta^-]$ = solve_omip(omip, sum_slack, dettime_lim)
-        restore_bounds(omip, mip)
-        sum_slack = $\sum_i \Delta^+_i + \Delta^-_i$
+        variable_fixing(omip, $\rho$);
+        $[\hat x, \Delta^+, \Delta^-]$ = solve_omip(omip, sum_slack, dettime_lim);
+        restore_bounds(omip, mip);
+        sum_slack = $\sum_i \Delta^+_i + \Delta^-_i$;
     }
 
     if (sum_slack == 0) {                           // Miglioramento qualita'.
-        best_solution = $c^t \hat x$
-        while (1) {
-            variable_fixing(omip, $\rho$)
-            $[\hat x, \Delta^+, \Delta^-]$ = solve_omip(omip, dettime_lim)
-            restore_bounds(omip, mip)
-
-            if ($c^t \hat x$ < best_solution) best_solution = $c^t \hat x$
-            else break
-        }
+        best_solution = 0;
+        do {
+            best_solution = $c^t \hat x$;
+            variable_fixing(omip, $\rho$);
+            $[\hat x, \Delta^+, \Delta^-]$ = solve_omip(omip, 0, dettime_lim);
+            restore_bounds(omip, mip);
+        } while ($c^t \hat x$ < best_solution);
+        $\hat x$ = best_solution;
     }
     
-    return $[\hat x, \Delta^+, \Delta^-]$
+    return $[\hat x, \Delta^+, \Delta^-]$;
 }
 \end{lstlisting}
 \end{minipage}
@@ -425,18 +425,4 @@ $\rho$ & 20\%\\
 \end{subfigure}
 
 \caption{Istogrammi con i risultati del terzo test.}
-\end{figure}
-
-\begin{figure}[ht!]
-\centering
-\begin{minipage}{\textwidth}
-\centering
-    \includegraphics[scale=0.7]{img/test3_bar_quality}
-    \caption{Istogramma della qualità del terzo test.}
-\end{minipage}
-\begin{minipage}{\textwidth}
-\centering
-    \includegraphics[scale=0.7]{img/test3_bar_time}
-    \caption{Istogramma dei tempi del terzo test.}
-\end{minipage}
 \end{figure}
