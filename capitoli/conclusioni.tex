@@ -3,3 +3,50 @@
 
 \section{Analisi dei risultati}%
 \label{sec:Analisi dei risultati}
+Nel primo test è stato fatto variare il valore della percentuale di variabili
+intere fissate, i migliori risultati si ottengono con il 20\%. 
+Negli altri casi il problema principale è che vengono fissate troppe 
+variabili, di conseguenza il valore della somma delle slack subisce 
+minimi decrementi di iterazione in iterazione e all'ultima 
+risulta ancora diverso da zero.
+
+Nel secondo test è stato preso in considerazione il parametro che 
+indica il tempo massimo che l'ottimizzatore ha a disposizione per risolvere
+un problema.
+Si tratta del parametro che incide di più sui risultati ed è il più difficile
+da settare: se il suo valore è molto alto, vengono effettuate molte
+iterazioni e il tempo totale cresce notevolmente; viceversa se il valore
+è troppo piccolo potrebbero avvenire minimi miglioramenti che non permettono
+di ottenere una soluzione ammissibile per il problema fornito in input
+all'algoritmo.
+Dai risultati si nota che aumentando il tempo vengono risolti sempre più problemi,
+si potrebbe quindi aumentare ulteriormente il valore ma potrebbe risultare
+svantaggioso in termini di tradeoff tempo/risultato.
+
+Nel terzo e ultimo test è stato modificato il valore del massimo numero
+di iterazioni dell'algoritmo.
+I risultati ottenuti sono pressoché identici a quelli del test precedente in
+quanto il numero di problemi risolti aumenta di due unità.
+Questo significa che nei casi rimanenti, dopo 10 iterazioni, il grado
+di inammissibilità della soluzione è ancora molto alto e poche iterazioni
+in più non bastano per ottenere una soluzione ammissibile.
+Andando ad aumentare il valore massimo, il numero di problemi risolti potrebbe
+crescere, ma anche in questo caso potrebbe non essere conveniente in
+termini di costi computazionali.
+
+\section{Possibili miglioramenti}%
+\label{sec:Possibili miglioramenti}
+Attualmente il problema principale dell'algoritmo è che i casi in cui non
+viene trovata una soluzione ammissibile per il MIP di partenza, richiedono
+molto tempo.
+Ad esempio, nel miglior caso del test 3, sono stati risolti 190 problemi
+in circa 4 ore, mentre i restanti 60 hanno richiesto un totale di 6 ore.
+Per migliorare questo aspetto, così come altre altre statistiche, è
+necessario trovare una strategia che, basandosi su una qualche caratteristica
+del problema passato in input, scelga dinamicamente il valore da assegnare a
+ciascun parametro.
+Trovare un algoritmo del genere che funzioni per problemi MIP generici può
+essere arduo. 
+Forse l'utilizzo dell'intelligenza artificiale potrebbe aiutare a
+trovare caratteristiche non così evidenti ma che permettono di ottenere
+prestazioni migliori.
