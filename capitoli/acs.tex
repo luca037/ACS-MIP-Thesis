@@ -1,9 +1,9 @@
 \chapter{L'algoritmo ACS}%
 \label{cha:L'algoritmo ACS}
 In capitolo capitolo viene descritto il funzionamento dell'algoritmo
-Alternating Criteria Search: viene definita la struttura dei sub-MIP e
+Alternating Criteria Search \cite{acsPaper}: viene definita la struttura dei sub-MIP e
 vengono descritti i passi che permettono all'algoritmo di ottenere una
-soluzione ammissibile per un problema MIP generico \cite{acsPaper}.
+soluzione ammissibile per un problema MIP generico.
 
 \section{Struttura dei problemi ausiliari}%
 \label{sec:Struttura dei problemi ausiliari}
@@ -18,7 +18,7 @@ Prendiamo in considerazione il seguente MIP:
 \end{equation}
 dove $c\in \R^m$, $A\in \R^{m\times n}$, $b\in \R^m$, $I\subseteq \{ 1, \ldots, n\}$
 è l'insieme contenente gli indici delle variabili intere, $x$ è il vettore
-delle variabili, infine $l\in \overline \R^n$ e $u\in \overline \R^n$ sono i
+di variabili $[x_1,\,\ldots,\,x_n]$, infine $l\in \overline \R^n$ e $u\in \overline \R^n$ sono i
 limiti imposti alle variabili e $\overline \R = \R \cup \{-\infty, +\infty\}$.
 
 \subsection{FMIP}%
@@ -38,7 +38,7 @@ dove $I_m\in \R^{m\times m}$ è la matrice identità e $\Delta^+$, $\Delta^-$
 sono due vettori di variabili continue aventi dimensione $m$ in accordo
 con il numero di vincoli del problema.
 FMIP è ottenuto da MIP andando a modificare la funzione obiettivo e
-aggiungendo variabili $\Delta^+_i,\,\Delta^-_i$ chiamate \emph{slack}.
+aggiungendo le variabili $\Delta^+_i,\,\Delta^-_i$ chiamate \emph{slack}.
 Dalla \ref{eq:FMIP} notiamo che una soluzione ammissibile per FMIP
 è ammissibile anche per il MIP se e solo se le variabili slack sommano
 a zero.
@@ -59,8 +59,7 @@ complessità del problema.
 \subsection{OMIP}%
 \label{sub:OMIP}
 Il secondo problema ausiliario ha come obiettivo quello di migliorare 
-il vettore parzialmente ammissibile $[\hat x,\,\, \Delta^+,\,\, \Delta^-]$
-che riceve in input.
+il vettore parzialmente ammissibile $[\hat x,\,\, \Delta^+,\,\, \Delta^-]$.
 Il suo modello si ottiene partendo dal MIP e aggiungendo ad ogni vincolo le 
 variabili slack:
 \begin{equation}
@@ -71,7 +70,7 @@ variabili slack:
         x_i = \hat x_i & \forall i \in F \\
         l \leq x \leq u\\
         x_i \in \Z & \forall i\in I
-    \end{cases}.
+    \end{cases}
 \end{equation}
 In maniera analoga a FMIP, anche in OMIP vengono fissate alcune delle
 variabili intere per ridurre la complessità del problema.
@@ -133,7 +132,7 @@ una ammissibile qualitativamente buona (punto azzurro).}
         \Ensure Feasible solution $\hat x$ if found
         \State $initialize \,\,[\hat x,\, \Delta^+,\, \Delta^-]$ \Comment Soluzione intera che rispetta i limiti
         \State $slack\_sum \gets -1$
-        \While {time limit not reached and $slack\_sum \neq 0$}
+        \While {time limit not reached \textbf{and} $slack\_sum \neq 0$}
         \State $F \gets \text{randomized variable index subset, } F\subseteq I$
         \State $[\hat x,\, \Delta^+,\, \Delta^-] \gets \text{solve\_FMIP}(F,\,\hat x)$
         \State $slack\_sum\gets \sum_i \Delta^+_i + \Delta^-_i$
@@ -186,7 +185,7 @@ L'algoritmo termina quando tutte le variabili sono state fissate.
         \Require Percentage of variables to fix $\theta$, $0 < \theta \leq 100$, Fixed bound constat $c_b$
         \Ensure Starting integer-feasible solution vector $\hat x$
         \State $F \gets \varnothing$
-        \While {$\hat x$ is not integer feasible and $F \neq I$}
+        \While {$\hat x$ is not integer feasible \textbf{and} $F \neq I$}
         \State $K \gets \text{index set of the first $\theta\%$ of unfixed variables of $I$}$
         \For {$k \in K$}
         \State $\hat x_k \gets \text{random integer value between } [\max(l_k,\, -c_b),\,\min(u_k,\, c_b)]$ 
@@ -209,8 +208,9 @@ Una volta fissate in maniera randomica le prime $\theta\%$ variabili
 di $I$ non ancora fissate, viene risolto il rilassamento lineare di FMIP.
 Se esistono delle variabili che non sono ancora state fissate e che hanno un
 valore intero nella soluzione del rilassamento, allora queste vengono fissate.
-Ne risulta che ad ogni iterazione vengono fissate almeno $\theta\%$ di variabili
-e di conseguenza l'algoritmo effettua $\lceil \frac{100}{\theta}\rceil$ iterazioni
+Ne risulta che ad ogni iterazione almeno $\theta\%$ di variabili vengono
+fissate,
+di conseguenza l'algoritmo effettua $\lceil \frac{100}{\theta}\rceil$ iterazioni
 nel caso peggiore.
 Il parametro $\theta$ rappresenta un tradeoff tra la difficoltà del rilassamento
 lineare e l'ammissibilità del vettore di soluzioni iniziale.
@@ -220,13 +220,13 @@ lineare e l'ammissibilità del vettore di soluzioni iniziale.
 Una volta ottenuto un vettore di soluzioni, prima di passare a risolvere un
 sub-MIP, bisogna decidere quante e quali variabili intere fissare.
 Il numero di variabili da fissare influisce sulla complessità del sub-MIP:
-fissarne troppe poche potrebbe non semplificare a sufficienza il problema
+fissarne poche potrebbe non semplificare a sufficienza il problema
 ausiliario e dunque ottenere dei miglioramenti richiederebbe molto tempo;
 d'altro canto, fissarne troppe potrebbe restringere eccessivamente la ricerca
 e portare a dei minimi miglioramenti.
 
 Trovare un metodo intelligente per scegliere quali variabili fissare può essere
-molto difficile, visto che esistono molte strutture di problemi da considerare.
+molto difficile visto che esistono molte strutture di problemi da considerare.
 L'Algoritmo~\ref{alg:varFixingSelection} implementa un'idea molto semplice
 che si adatta a qualsiasi tipo di struttura e permette di scegliere la quantità
 di variabili da fissare.

@@ -16,7 +16,7 @@ Un problema di ottimizzazione $P$ viene definito come segue:
         x \in D
     \end{cases}
 \end{equation}
-dove $x$ è una tupla $(x_1, \ldots, x_n)$, $D$ è un prodotto cartesiano 
+dove $x$ è una un vettore $[x_1,\, \ldots,\, x_n]$, $D$ è un prodotto cartesiano 
 $D_1 \times \ldots \times D_n$ tale per cui $x_j \in D_j\,\forall j = 1,\ldots,n$,
 $f(x)$ è una funzione a valori reali in $x$ ed infine $S$ è un insieme finito 
 di vincoli.
@@ -41,13 +41,12 @@ Una soluzione $x^*\in F(P)$ è ottima se
     f(x^*) \leq f(x) \quad \forall x \in F(P).
 \end{equation}
 
-Risolvere un problema di ottimizzazione significa trovare una \emph{soluzione
-ottima}, dimostrare che sia tale oppure dimostrare che il problema è impossibile
+Risolvere un problema di ottimizzazione significa trovare una soluzione
+ottima, dimostrare che sia tale oppure dimostrare che il problema è impossibile
 o illimitato.
 
 \section{Concetti generali dell'ottimizzazione}%
 \label{sec:Concetti generali dell'ottimizzazione}
-Introduciamo i concetti sui quali si basano gli algoritmi risolutivi.
 
 \subsection{Ricerca}%
 \label{sub:Ricerca (search)}
@@ -56,13 +55,13 @@ di restrizioni $P_1, \ldots, P_m$ di un problema $P$.
 Una restrizione $P_k$ è un problema di ottimizzazione ottenuto da $P$ aggiungendo
 dei vincoli.
 Si osserva che:
-\begin{enumerate}
+\begin{itemize}
     \item se $F(P_k)$ è illimitato allora lo è anche $F(P)$;
     \item se $F(P_k) = \varnothing$, ovvero se $P_k$ è impossibile,
         allora non si può dire nulla di $F(P)$;
     \item se $F(P_k)$ presenta una soluzione ottima allora abbiamo trovato
         il limite superiore della soluzione ottima di $P$.
-\end{enumerate}
+\end{itemize}
 Notiamo come, nell'ultimo caso, abbiamo ricavato un'informazione sulla soluzione
 ottima di $P$ risolvendo una sua restrizione.
 
@@ -94,8 +93,8 @@ delle restrizioni (corrispondenti alle foglie dell'albero) sufficientemente
 facili da risolvere.
 Il caso peggiore ha prestazioni esponenziali e si verifica quando tutte le 
 foglie corrispondono a restrizioni di $P$ in cui $x$ è fissato ad un valore 
-appartenente al dominio $D$, in altre parole l'algoritmo diventa identico
-al generate and test.
+appartenente al dominio $D$.
+In altre parole l'algoritmo diventa identico al generate and test.
 
 L'ultima tipologia di ricerca che introduciamo è quella \emph{euristica}.
 La ricerca euristica permette di ottenere una soluzione del problema $P$
@@ -119,6 +118,11 @@ Valgono le seguenti proprietà:
     \item se $x^*$ è una soluzione ottima di $R$, $x^* \in F(P)$ e $g(x^*) = f(x^*)$,
         allora $x^*$ è ottima anche per $P$.
 \end{itemize}
+Se ci troviamo nell'ultimo caso, allora abbiamo risolto $P$ risolvendo una
+sua restrizione.
+Se $R$ è più semplice da risolvere si ottiene un vantaggio in termini di
+costi computazionali.
+
 
 %\begin{figure}[ht!]
 %\begin{center}
@@ -146,8 +150,8 @@ dove $\sim \in \{\leq, \geq, =\}$, $l_j \in \R \cup \{-\infty\}$ e $u_j \in \R \
 %soluzioni ammissibili appartengano ad un insieme chiuso.
 %Più avanti vedremo il perché di questa scelta.
 Dato un problema di programmazione lineare, esiste un algoritmo che, al caso peggiore,
-riesce a risolverlo con complessità polinomiale nella taglia del problema.
-La taglia di un problema è definita dal numero delle variabili e di vincoli.
+riesce a risolverlo con complessità polinomiale nella taglia del problema,
+dove la taglia è definita dal numero delle variabili e di vincoli.
 
 In generale la programmazione lineare è poco applicabile in quanto la maggior
 parte dei problemi reali non rientra a far parte di questa categoria.
@@ -172,8 +176,8 @@ Programming}) è definito come segue:
     \end{cases}
 \end{equation}
 dove $\sim \in \{\leq, \geq, =\}$.
-Rispetto alla \ref{eq:lpDef} viene introdotto in aggiunta il vincolo che alcune
-delle variabili devono assumere valori interi.
+Rispetto alla \ref{eq:lpDef} viene aggiunto il vincolo di interezza:
+una o più variabili devono assumere valori interi.
 
 Si riescono a modellare molti più problemi con la programmazione lineare
 intera rispetto alla programmazione lineare.
@@ -181,7 +185,7 @@ intera rispetto alla programmazione lineare.
 \subsection{Algoritmo Branch and Bound}%
 \label{sub:Algoritmo Branch And Bound}
 Il branch-and-bound (B\&B) è un algoritmo che si basa sul paradigma 
-divide-and-conquer, viene utilizzato per risolvere problemi di ottimizzazione 
+divide-and-conquer e viene utilizzato per risolvere problemi di ottimizzazione 
 generica tra cui i problemi di programmazione lineare intera.
 Il B\&B implementa una ricerca ad albero che permette di 
 ricavare una soluzione ottima del problema considerato.
@@ -193,15 +197,15 @@ che vogliamo risolvere. Indichiamo questo problema con $P$.
         il vincolo di interezza alle variabili.
         $R$ è un problema di programmazione lineare ed è quindi più semplice
         da risolvere.
-        Si possono presentare tre casi:
+        Una volta risolto il rilassamento, si possono presentare tre casi:
         \begin{enumerate}
             \item Se $F(R) = \varnothing$ allora $F(P) = \varnothing$ quindi
                 l'algoritmo termina.
             \item Se esiste una soluzione ottima $x^*\in F(R)$ tale per cui $x^* \in F(P)$,
                 allora $x^*$ è ottima per $P$ e l'algoritmo termina.
             \item Se invece $x^* \notin F(P)$ significa che 
-                la soluzione trovata non rispetta almeno un vincolo di interezza,
-                in questo caso abbiamo trovato un \emph{limite inferiore}
+                la soluzione trovata non rispetta almeno un vincolo di interezza.
+                In questo caso abbiamo trovato un \emph{limite inferiore}
                 sull'ottimo di $P$.
         \end{enumerate}
         Se ci ritroviamo nel caso $(c)$ allora l'algoritmo prosegue.
@@ -214,7 +218,7 @@ che vogliamo risolvere. Indichiamo questo problema con $P$.
         di interezza, ovvero
         $ \exists\,j \in J \,:\, x^*_j \notin \Z$.
         Di conseguenza due nodi figli possono essere creati imponendo a ciascuno
-        uno dei due seguenti vincoli aggiuntivi:
+        uno dei due seguenti vincoli:
         \begin{equation}
             x_j \leq \lfloor x^*_j \rfloor,\quad x_j \geq \lceil x^*_j \rceil.
         \end{equation}
@@ -285,8 +289,8 @@ che vogliamo risolvere. Indichiamo questo problema con $P$.
 L'algoritmo B\&C è stato sviluppato appositamente per risolvere i problemi di
 programmazione lineare intera mista. % Cita il prof
 Rispetto al B\&B, nel B\&C vengono ricavati dei piani di taglio per ogni
-rilassamento lineare di ogni sottoproblema dell'albero.
-Si parla di rafforzamento del rilassamento lineare associato.
+rilassamento lineare di ogni sottoproblema dell'albero:
+si parla di rafforzamento del rilassamento lineare associato.
 L'applicazione dei questa tecnica aumenta la possibilità di ottenere una
 soluzione intera dal rilassamento lineare, allo stesso tempo permette di
 ottenere un migliore limite inferiore alla soluzione ottima del problema
@@ -307,11 +311,12 @@ In generale gli euristici sono metodi che cercano di trovare una buona
 soluzione impiegando poco tempo ed effettuando scelte basate su
 alcune caratteristiche rilevanti del problema considerato.
 Nel nostro contesto un algoritmo euristico applicato ad un problema
-MIP permette di ottenere una soluzione che rispetta tutti i vincoli del problema
-ma non consente di determinare se la soluzione trovata è la migliore possibile
+MIP, permette di ottenere una soluzione che rispetta tutti i vincoli del problema
+ma non consente di determinare se si tratta della migliore possibile
 \cite{heuristicsCplex} \cite{heuristicsBerthold}.
 L'obiettivo in questo caso non è quello di trovare una soluzione ottima ma di
 ottenerne una ammissibile di alta qualità.
+
 L'approccio utilizzato dall'ACS è quello di risolvere, in maniera iterativa,
 molteplici \emph{sub-MIP} ricavati a partire dal problema principale.
 I sub-MIP considerati appartengono ad una delle seguenti due tipologie:
@@ -323,16 +328,13 @@ I sub-MIP considerati appartengono ad una delle seguenti due tipologie:
 \end{itemize}
 Allo scopo di raggiungere questi due obiettivi vengono risolte delle
 varianti in cui un certo numero di variabili vengono fissate.
-L'ACS ricava una soluzione ammissibile per MIP risolvendo molteplici
-sub-MIP con il B\&C.
 
 L'ACS trova la sua utilità sia come algoritmo standalone per risolvere
 problemi molto difficili che richiedono elevati costi computazionali per
 raggiungere l'ottimalità, sia come strumento aggiuntivo da integrare ad
-un algoritmo esatto per velocizzare il processo di risoluzione di un
-generico problema MIP.
+un algoritmo esatto per velocizzare il processo di risoluzione.
 Infatti l'implementazione allo stato dell'arte di B\&C \cite{cplex22.1.1}
-utilizza degli euristici per ottenere soluzioni utili per la dimostrazione 
+sfrutta degli euristici per ottenere soluzioni utili per la dimostrazione 
 di ottimalità.
-L'utilizzo di questi metodi permette in molti casi di ottenere soluzioni
-di alta qualità più velocemente rispetto a sfruttare solamente il branching.
+Questi metodi permettono in molti casi di ricavare soluzioni di alta qualità
+più velocemente rispetto ad utilizzare solamente il branching.

@@ -19,8 +19,8 @@ nel quale si trovano:
     \item una istanza "aperta".
 \end{itemize}
 La difficoltà di un'istanza è definita da MIPLIB in base al tempo necessario
-per raggiungere l'ottimalità.
-Le istanze classificate come "aperte" non sono state ancora state risolte.
+per raggiungere l'ottimalità o per dimostrarne l'impossibilità.
+Le istanze classificate come "aperte" non sono ancora state risolte.
 
 \subsection{Software e hardware utilizzato}%
 \label{sub:Software utilizzato}
@@ -28,8 +28,7 @@ L'algoritmo è stato realizzato utilizzando il linguaggio di programmazione C.
 Per la manipolazione e la risoluzione di problemi MIP e LP sono state
 utilizzate le funzioni offerte dalla \emph{CPLEX Callable Library} 22.1.1
 \cite{cplexCallableLib}.
-I test sono stati effettuati sul cluster del dipartimento di ricerca operativa
-del Dipartimento di Ingegneria dell'Informazione.
+I test sono stati effettuati sul cluster del Dipartimento di Ingegneria dell'Informazione.
 La macchina utilizzata dispone di un processore Intel(R) Xeon(R) CPU E3-1220
 V2 @ 3.10GHz e 16GB di RAM.
 
@@ -42,6 +41,7 @@ Le statistiche ricavate da ogni test sono le seguenti:
     \item Tempo medio per ottenere una soluzione ammissibile per MIP.
     \item Qualità media della soluzione trovata.
 \end{itemize}
+Per il calcolo della qualità è stata utilizzata la formula introdotta in \cite{acsPaper}.
 Data una soluzione $x$ per un problema MIP avente soluzione ottima $\hat x$,
 la qualità $\gamma(x)\in [0,\,1]$ di $x$ è definita come segue:
 \begin{equation}
@@ -68,7 +68,7 @@ sono più stati modificati, il questo caso viene riportato il valore assegnato.
     \item \verb|MAX_ITR|: massimo numero di iterazioni dell'algoritmo.
         Una iterazione è completa quando viene risolto FMIP e successivamente
         OMIP.
-    \item \verb|dettime_lim|: limite di tempo espresso in \emph{ticks}.
+    \item \verb|dettime_lim|: limite di tempo espresso in \emph{ticks} \cite{ticks}.
         Si tratta del tempo massimo che ha a disposizione l'ottimizzatore di
         CPLEX per risolvere un problema.
     \item \verb|BOUND_CONSTANT|: fa riferimento al parametro $c_b$ introdotto
@@ -100,15 +100,15 @@ Infine $\verb|dettime_lim|$ è stato calcolato utilizzando la formula
 \begin{equation}
     \verb|dettime_lim| = \mu(x, y) = \max( x,\, \min( {nz}/{y}, \, 10^5))
 \end{equation}
-dove $\mu$ è una funzione, i suoi argomenti sono:
+dove $\mu$ è una funzione, mentre: 
 $nz$, il numero di valori diversi da zero all'interno della
 matrice dei vincoli del problema MIP che vogliamo risolvere; $y$ un qualsiasi
 valore reale;
 $x$ è il minimo valore di tempo che vogliamo assegnare al parametro.
 Il tempo massimo assegnabile è stato fissato a $10^5$.
 Utilizzare questa formula permette di assegnare in maniera dinamica
-il tempo limite entro il quale l'ottimizzatore CPLEX può trovare una soluzione:
-più è è grande $nz$ e più tempo avrà a disposizione.
+il tempo limite entro il quale l'ottimizzatore CPLEX può trovare una soluzione
+di un sub-MIP.
 
 \subsection{Pseudocodice}%
 \label{sub:Pseudocodice}
@@ -122,7 +122,7 @@ l'Algoritmo~\ref{alg:startingVectorHeuristic} e l'Algoritmo~\ref{alg:varFixingSe
 AlternatingCriteriaSearch(mip, MAX_ITR, dettime_lim, $\theta$, $\rho$, BOUND_CONSTANT) {
     fmip = create_fmip(mip);
     omip = create_omip(mip);
-    $\hat x$ = init_starting_vector($\theta$, BOUND_CONSTANT);
+    $\hat x$ = generate_starting_vector($\theta$, BOUND_CONSTANT);
 
     sum_slack = -1
     for (itr = 0; itr < MAX_ITR && sum_slack != 0; itr++) {
@@ -167,7 +167,7 @@ nostro caso risulta vantaggioso passare come MIP start a OMIP la soluzione
 trovata da FMIP e, successivamente, passare la soluzione di OMIP
 prima di risolvere FMIP.
 In questo modo, oltre a garantire la presenza di una soluzione ammissibile,
-ci si assicura che la somma delle variabili slack diminuisce in maniera 
+ci si assicura che la somma delle variabili slack decresca in maniera 
 monotona di iterazione in iterazione.
 
 La fase di miglioramento della qualità della soluzione segue una
@@ -184,11 +184,11 @@ che una combinazione di valori assegnati ai parametri è migliore rispetto ad
 un altra.
 Si tratta quindi di verificare in via sperimentale quale combinazione
 offre le migliori prestazioni.
-Per semplificare l'analisi i parametri sono stati considerati indipendenti.
-Di conseguenza sono stati esaminati uno alla volta e per ognuno è stato
+Per semplificare l'analisi i parametri sono stati considerati indipendenti:
+sono stati esaminati uno alla volta e per ognuno è stato
 scelto il valore che ha prodotto i risultati migliori.
 Infine, per ogni combinazione di parametri, sono stati svolti tre test,
-uno per ciascun seme, e i risultati finali sono stati calcolati come media
+uno per ciascun seme, e i risultati finali sono stati calcolati tramite media
 aritmetica.
 
 \section{Risultati}%

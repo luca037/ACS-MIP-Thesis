@@ -25,11 +25,12 @@ svantaggioso in termini di tradeoff tempo/risultato.
 
 Nel terzo e ultimo test è stato modificato il valore del massimo numero
 di iterazioni dell'algoritmo.
-I risultati ottenuti sono pressoché identici a quelli del test precedente in
-quanto il numero di problemi risolti aumenta di due unità.
+I risultati ottenuti sono pressoché identici a quelli del test precedente,
+il numero di problemi risolti aumenta solamente di due unità.
 Questo significa che nei casi rimanenti, dopo 10 iterazioni, il grado
 di inammissibilità della soluzione è ancora molto alto e poche iterazioni
-in più non bastano per ottenere una soluzione ammissibile.
+in più non bastano per ottenere una soluzione ammissibile, oppure il grado
+può essere basso ma l'algoritmo non converge ad una soluzione.
 Andando ad aumentare il valore massimo, il numero di problemi risolti potrebbe
 crescere, ma anche in questo caso potrebbe non essere conveniente in
 termini di costi computazionali.
@@ -41,7 +42,7 @@ viene trovata una soluzione ammissibile per il MIP di partenza, richiedono
 molto tempo.
 Ad esempio, nel miglior caso del test 3, sono stati risolti 190 problemi
 in circa 4 ore, mentre i restanti 60 hanno richiesto un totale di 6 ore.
-Per migliorare questo aspetto, così come altre altre statistiche, è
+Per migliorare questo aspetto, così come altre statistiche, è
 necessario trovare una strategia che, basandosi su una qualche caratteristica
 del problema passato in input, scelga dinamicamente il valore da assegnare a
 ciascun parametro.
@@ -50,3 +51,6 @@ essere arduo.
 Forse l'utilizzo dell'intelligenza artificiale potrebbe aiutare a
 trovare caratteristiche non così evidenti ma che permettono di ottenere
 prestazioni migliori.
+
+Infine l'utilizzo della parallelizzazione, come esposto in \cite{acsPaper},
+consente di migliorare le prestazioni.
