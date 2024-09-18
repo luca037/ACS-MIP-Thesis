@@ -219,9 +219,9 @@ $\rho$ & \emph{Soggetto test}\\
 \hline
 $\rho$ & \textbf{Prob. risolti} & \textbf{Iteraz. medie} & \textbf{Tempo medio} [s] & \textbf{Qualità media}\\
 \hline
-\rowcolor{lightgray} 20\% & 132 & 1.89 & 21.41 & 18.67\% \\
-50\% & 115 & 2.74 & 20.37 & 34.62\% \\
-80\% & 75 & 3.32 & 7.93& 58.5\% \\
+\rowcolor{lightgray} 20\% & 163 & 2.06 & 23.33 & 23.42\% \\
+50\% & 132 & 2.6 & 20.34 & 37.06\% \\
+80\% & 95 & 3 & 11.13 & 58.67\% \\
 \hline
 \end{tabular}
 \caption{Risultati del primo test.}
@@ -370,38 +370,69 @@ $\rho$ & 20\%\\
 
 \begin{figure}[ht!]
 \centering
-\begin{minipage}{\textwidth}
-\centering
-    \includegraphics[scale=0.55]{img/test1_bar_quality}
-    \caption{Istogramma della qualità del il primo test.}
-\end{minipage}
-\begin{minipage}{\textwidth}
-\centering
-    \includegraphics[scale=0.55]{img/test1_bar_time}
-    \caption{Istogramma dei tempi del primo test.}
-\end{minipage}
-\begin{minipage}{\textwidth}
-\centering
-    \includegraphics[scale=0.55]{img/test1_bar_time}
-    \caption{Istogramma dei tempi del primo test.}
-\end{minipage}
+\begin{subfigure}[b]{0.46\textwidth}
+    \centering
+    \includegraphics[scale=0.57]{img/test1_bar_quality}
+\end{subfigure}
+\hspace{0.06\textwidth}
+\begin{subfigure}[b]{0.46\textwidth}
+    \centering
+    \includegraphics[scale=0.57]{img/test1_bar_quality_nf}
+\end{subfigure}
+
+\begin{subfigure}[b]{0.46\textwidth}
+    \centering
+    \includegraphics[scale=0.57]{img/test1_bar_time}
+\end{subfigure}
+\hspace{0.06\textwidth}
+\begin{subfigure}[b]{0.46\textwidth}
+    \centering
+    \includegraphics[scale=0.57]{img/test1_bar_time_nf}
+\end{subfigure}
+
+\begin{subfigure}[b]{0.46\textwidth}
+    \centering
+    \includegraphics[scale=0.57]{img/test1_bar_itr}
+\end{subfigure}
+\hspace{0.06\textwidth}
+\begin{subfigure}[b]{0.46\textwidth}
+    \centering
+    \rule{0.45\textwidth}{0pt}
+\end{subfigure}
+
+\caption{Istogrammi con i risultati del primo test.}
 \end{figure}
 
 \begin{figure}[ht!]
 \centering
-\begin{subfigure}{\textwidth}
+\begin{subfigure}[b]{0.46\textwidth}
     \centering
-    \includegraphics[scale=0.63]{img/test2_bar_quality}
+    \includegraphics[scale=0.57]{img/test2_bar_quality}
+\end{subfigure}
+\hspace{0.06\textwidth}
+\begin{subfigure}[b]{0.46\textwidth}
+    \centering
+    \includegraphics[scale=0.57]{img/test2_bar_quality_nf}
 \end{subfigure}
 
-\begin{subfigure}{\textwidth}
+\begin{subfigure}[b]{0.46\textwidth}
     \centering
-    \includegraphics[scale=0.63]{img/test2_bar_time}
+    \includegraphics[scale=0.57]{img/test2_bar_time}
+\end{subfigure}
+\hspace{0.06\textwidth}
+\begin{subfigure}[b]{0.46\textwidth}
+    \centering
+    \includegraphics[scale=0.57]{img/test2_bar_time_nf}
 \end{subfigure}
 
-\begin{subfigure}{\textwidth}
+\begin{subfigure}[b]{0.46\textwidth}
     \centering
-    \includegraphics[scale=0.63]{img/test2_bar_itr}
+    \includegraphics[scale=0.57]{img/test2_bar_itr}
+\end{subfigure}
+\hspace{0.06\textwidth}
+\begin{subfigure}[b]{0.46\textwidth}
+    \centering
+    \rule{0.45\textwidth}{0pt}
 \end{subfigure}
 
 \caption{Istogrammi con i risultati del secondo test.}
@@ -409,19 +440,34 @@ $\rho$ & 20\%\\
 
 \begin{figure}[ht!]
 \centering
-\begin{subfigure}{\textwidth}
+\begin{subfigure}[b]{0.46\textwidth}
     \centering
-    \includegraphics[scale=0.63]{img/test3_bar_quality}
+    \includegraphics[scale=0.57]{img/test3_bar_quality}
+\end{subfigure}
+\hspace{0.06\textwidth}
+\begin{subfigure}[b]{0.46\textwidth}
+    \centering
+    \includegraphics[scale=0.57]{img/test3_bar_quality_nf}
 \end{subfigure}
 
-\begin{subfigure}{\textwidth}
+\begin{subfigure}[b]{0.46\textwidth}
     \centering
-    \includegraphics[scale=0.63]{img/test3_bar_time}
+    \includegraphics[scale=0.57]{img/test3_bar_time}
+\end{subfigure}
+\hspace{0.06\textwidth}
+\begin{subfigure}[b]{0.46\textwidth}
+    \centering
+    \includegraphics[scale=0.57]{img/test3_bar_time_nf}
 \end{subfigure}
 
-\begin{subfigure}{\textwidth}
+\begin{subfigure}[b]{0.46\textwidth}
     \centering
-    \includegraphics[scale=0.63]{img/test3_bar_itr}
+    \includegraphics[scale=0.57]{img/test3_bar_itr}
+\end{subfigure}
+\hspace{0.06\textwidth}
+\begin{subfigure}[b]{0.46\textwidth}
+    \centering
+    \rule{0.45\textwidth}{0pt}
 \end{subfigure}
 
 \caption{Istogrammi con i risultati del terzo test.}
