@@ -19,19 +19,19 @@ iterazioni e il tempo totale cresce notevolmente; viceversa se il valore
 è troppo piccolo potrebbero avvenire minimi miglioramenti che non permettono
 di ottenere una soluzione ammissibile per il problema fornito in input
 all'algoritmo.
-Dai risultati si nota che aumentando il tempo vengono risolti sempre più problemi,
-si potrebbe quindi aumentare ulteriormente il valore ma potrebbe risultare
-svantaggioso in termini di tradeoff tempo/risultato.
+Dai risultati si nota che aumentando il tempo vengono trovate sempre più soluzioni
+ammissibili, si potrebbe quindi aumentare ulteriormente il 
+valore ma potrebbe risultare svantaggioso in termini di tradeoff tempo/risultato.
 
 Nel terzo e ultimo test è stato modificato il valore del massimo numero
 di iterazioni dell'algoritmo.
 I risultati ottenuti sono pressoché identici a quelli del test precedente,
-il numero di problemi risolti aumenta solamente di due unità.
+il numero di soluzioni ammissibili trovate aumenta solamente di due unità.
 Questo significa che nei casi rimanenti, dopo 10 iterazioni, il grado
 di inammissibilità della soluzione è ancora molto alto e poche iterazioni
 in più non bastano per ottenere una soluzione ammissibile, oppure il grado
 può essere basso ma l'algoritmo non converge ad una soluzione.
-Andando ad aumentare il valore massimo, il numero di problemi risolti potrebbe
+Andando ad aumentare il valore massimo, il numero di soluzioni ammissibili potrebbe
 crescere, ma anche in questo caso potrebbe non essere conveniente in
 termini di costi computazionali.
 
@@ -40,8 +40,8 @@ termini di costi computazionali.
 Attualmente il problema principale dell'algoritmo è che i casi in cui non
 viene trovata una soluzione ammissibile per il MIP di partenza, richiedono
 molto tempo.
-Ad esempio, nel miglior caso del test 3, sono stati risolti 190 problemi
-in circa 4 ore, mentre i restanti 60 hanno richiesto un totale di 6 ore.
+Ad esempio, nel miglior caso del test 3, è stata trovata una soluzione ammissibile
+per 190 problemi in circa 4 ore, mentre i restanti 60 hanno richiesto un totale di 6 ore.
 Per migliorare questo aspetto, così come altre statistiche, è
 necessario trovare una strategia che, basandosi su una qualche caratteristica
 del problema passato in input, scelga dinamicamente il valore da assegnare a

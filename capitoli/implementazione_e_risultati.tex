@@ -36,7 +36,9 @@ V2 @ 3.10GHz e 16GB di RAM.
 \label{sub:Statistiche osservate}
 Le statistiche ricavate da ogni test sono le seguenti:
 \begin{itemize}
-    \item Numero di problemi per cui è stata trovata una soluzione ammissibile per MIP.
+    \item Numero di problemi per cui è stata trovata una soluzione ammissibile
+        per MIP\footnote{Nella sezione dedicata ai risultati questo valore è indicato
+        da "\# soluzioni".}.
     \item Numero di iterazioni medie per ottenere una soluzione ammissibile per MIP.
     \item Tempo medio per ottenere una soluzione ammissibile per MIP.
     \item Qualità media della soluzione trovata.
@@ -217,7 +219,7 @@ $\rho$ & \emph{Soggetto test}\\
 \centering
 \begin{tabular}{ccccc}
 \hline
-$\rho$ & \textbf{Prob. risolti} & \textbf{Iteraz. medie} & \textbf{Tempo medio} [s] & \textbf{Qualità media}\\
+$\rho$ & \textbf{\# soluzioni} & \textbf{Iteraz. medie} & \textbf{Tempo medio} [s] & \textbf{Qualità media}\\
 \hline
 \rowcolor{lightgray} 20\% & 163 & 2.06 & 23.33 & 23.42\% \\
 50\% & 132 & 2.6 & 20.34 & 37.06\% \\
@@ -227,55 +229,9 @@ $\rho$ & \textbf{Prob. risolti} & \textbf{Iteraz. medie} & \textbf{Tempo medio} 
 \caption{Risultati del primo test.}
 \end{table}
 
-%\begin{figure}[ht!]
-%\begin{center}
-%    \includegraphics[scale=0.7]{img/test1_bar_quality}
-%\end{center}
-%\caption{Istogramma della qualità del primo test (caso migliore).}
-%\end{figure}
-%
-%\begin{figure}[ht!]
-%\begin{center}
-%    \includegraphics[scale=0.7]{img/test1_bar_time}
-%\end{center}
-%\caption{Istogramma dei tempi del primo test (caso migliore).}
-%\end{figure}
-
-
 \subsection{Secondo test: scelta parametro dettime\texorpdfstring{\_}{}lim}%
 \label{sub:Secondo test: scelta parametro dettime-lim}
 Nel secondo test è stato considerato il parametro \verb|dettime_lim|.
-
-% OLD
-%\begin{table}[ht!]
-%\centering
-%\begin{tabular}{cc}
-%\hline
-%\textbf{Parametro} & \textbf{Valore} \\
-%\hline
-%\verb|MAX_ITR| & 10 \\
-%\verb|MAX_ATTEMPT| & 1 \\
-%$\theta$ & 1\%\\
-%$\rho$ & 20\%\\
-%\hline
-%\end{tabular}
-%\caption{Parametri utilizzati per il secondo test.}
-%\end{table}
-%
-%\begin{table}[ht!]
-%\centering
-%\begin{tabular}{ccccc}
-%\hline
-%\verb|dettime_lim| & \textbf{Prob. risolti} & \textbf{Iteraz. medie} & \textbf{Tempo medio} [s] & \textbf{Qualità media}\\
-%\hline
-%%$\mu(10^3, 50)$ & 139 & 1.98 & 62.78 & 15.86\% \\
-%$\mu(10 \cdot 10^3, 100)$ & 157 & 1.88 & 33.23 & 16.46\% \\
-%$\mu(15 \cdot 10^3, 100)$ & 159 & 1.9 & 44.23 & 15.67\% \\
-%$\mu(20 \cdot 10^3, 100)$ & 164 & 1.96 & 54.84 & 15.88\% \\
-%\hline
-%\end{tabular}
-%\caption{Risultati del primo test.}
-%\end{table}
 
 \begin{table}[ht!]
 \centering
@@ -296,7 +252,7 @@ $\rho$ & 20\%\\
 \centering
 \begin{tabular}{ccccc}
 \hline
-\verb|dettime_lim| & \textbf{Prob. risolti} & \textbf{Iteraz. medie} & \textbf{Tempo medio} [s] & \textbf{Qualità media}\\
+\verb|dettime_lim| & \textbf{\# soluzioni} & \textbf{Iteraz. medie} & \textbf{Tempo medio} [s] & \textbf{Qualità media}\\
 \hline
 $\mu(10 \cdot 10^3, 100)$ & 179 & 2.2 & 46.01 & 17.91\% \\
 $\mu(15 \cdot 10^3, 100)$ & 181 & 2.16 & 55.77 & 16.86\% \\
@@ -305,20 +261,6 @@ $\mu(15 \cdot 10^3, 100)$ & 181 & 2.16 & 55.77 & 16.86\% \\
 \end{tabular}
 \caption{Risultati del secondo test.}
 \end{table}
-
-%\begin{figure}[ht!]
-%\begin{center}
-%    \includegraphics[scale=0.7]{img/test2_bar_quality}
-%\end{center}
-%\caption{Istogramma della qualità del secondo test (caso migliore).}
-%\end{figure}
-%
-%\begin{figure}[ht!]
-%\begin{center}
-%    \includegraphics[scale=0.7]{img/test2_bar_time}
-%\end{center}
-%\caption{Istogramma dei tempi del secondo test (caso migliore).}
-%\end{figure}
 
 \subsection{Terzo test: scelta parametro MAX\texorpdfstring{\_}{}ITR}%
 \label{sub:Terzo test: scelta parametro MAX-ITR}
@@ -343,7 +285,7 @@ $\rho$ & 20\%\\
 \centering
 \begin{tabular}{ccccc}
 \hline
-\verb|MAX_ITR| & \textbf{Prob. risolti} & \textbf{Iteraz. medie} & \textbf{Tempo medio} [s] & \textbf{Qualità media}\\
+\verb|MAX_ITR| & \textbf{\# soluzioni} & \textbf{Iteraz. medie} & \textbf{Tempo medio} [s] & \textbf{Qualità media}\\
 \hline
 11 & 187 & 2.32 & 72.32 & 17.82\% \\
 12 & 187 & 2.33 & 72.73 & 17.81\% \\
@@ -352,21 +294,6 @@ $\rho$ & 20\%\\
 \end{tabular}
 \caption{Risultati del terzo test.}
 \end{table}
-
-%\begin{figure}[ht!]
-%\begin{center}
-%    \includegraphics[scale=0.7]{img/test3_bar_quality}
-%\end{center}
-%\caption{Istogramma della qualità del terzo test (caso migliore).}
-%\end{figure}
-%
-%\begin{figure}[ht!]
-%\begin{center}
-%    \includegraphics[scale=0.7]{img/test3_bar_time}
-%\end{center}
-%    \includegraphics[scale=0.7]{img/test3_bar_time}
-%\caption{Istogramma dei tempi del terzo test (caso migliore).}
-%\end{figure}
 
 \begin{figure}[ht!]
 \centering
