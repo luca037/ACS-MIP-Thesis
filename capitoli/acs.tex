@@ -31,7 +31,7 @@ Il modello di FMIP è il seguente:
         x_i = \hat x_i & \forall i \in F \\
         l \leq x \leq u\\
         x_i \in \Z & \forall i \in I\\
-        \Delta^+ \leq 0,\quad \Delta^- \leq 0
+        \Delta^+ \geq 0,\quad \Delta^- \geq 0
     \end{cases}
 \end{equation}
 dove $I_m\in \R^{m\times m}$ è la matrice identità e $\Delta^+$, $\Delta^-$
@@ -69,7 +69,7 @@ variabili slack:
         \sum\limits_{i=0}^{m-1} \Delta^+_i + \Delta^-_i \leq \sum\limits_{i=0}^{m-1} \hat \Delta^+_i + \hat \Delta^-_i\\
         x_i = \hat x_i & \forall i \in F \\
         l \leq x \leq u\\
-        x_i \in \Z & \forall i\in I
+        x_i \in \Z & \forall i\in I\\
     \end{cases}
 \end{equation}
 In maniera analoga a FMIP, anche in OMIP vengono fissate alcune delle
